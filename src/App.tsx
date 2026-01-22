@@ -82,7 +82,7 @@ export default function App() {
     });
   };
 
-  const handleMouseUp = (event: MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseUp = () => {
     if (currentElement) {
       setElements(prev => [...prev, currentElement]);
     }
