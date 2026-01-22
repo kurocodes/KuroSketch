@@ -6,7 +6,7 @@ export function drawElement(element: DrawingElement, rc: RoughCanvas) {
 
   switch (element.type) {
     case "line":
-      rc.line(x1, y1, x2, y2);
+      rc.line(x1, y1, x2, y2, { seed: Number(element.id) });
       break;
 
     case "rect":
