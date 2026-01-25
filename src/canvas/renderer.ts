@@ -1,7 +1,7 @@
 import type { RoughCanvas } from "roughjs/bin/canvas";
 import type { DrawingElement } from "./types";
 
-export function drawElement(element: DrawingElement, rc: RoughCanvas) {
+export function drawElement(element: DrawingElement, rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
   const { x1, y1, x2, y2 } = element;
 
   switch (element.type) {
@@ -15,6 +15,7 @@ export function drawElement(element: DrawingElement, rc: RoughCanvas) {
         Math.min(y1, y2),
         Math.abs(x2 - x1),
         Math.abs(y2 - y1),
+        { seed: Number(element.id) },
       );
       break;
 
@@ -23,22 +24,21 @@ export function drawElement(element: DrawingElement, rc: RoughCanvas) {
       const height = Math.abs(y2 - y1);
       const diameter = Math.max(width, height);
 
-      rc.circle(x1, y1, diameter);
+      rc.circle(x1, y1, diameter, { seed: Number(element.id) });
       break;
     }
 
     case "pencil": {
       if (!element.points) return;
-      for (let i = 0; i < element.points.length - 1; i++) {
-        const p1 = element.points[i];
-        const p2 = element.points[i + 1];
-        rc.line(p1.x, p1.y, p2.x, p2.y);
-      }
+      rc.linearPath(element.points.map(p => [p.x, p.y]), { seed: Number(element.id) });
       break;
     }
 
     case "text":
-      // TODO: implement text rendering (Phase 6)
+      ctx.font = "16px sans-serif";
+      ctx.fillStyle = "#000";
+      ctx.textBaseline = "top";
+      if (element.text) ctx.fillText(element.text, x1, y1);
       break;
   }
 }

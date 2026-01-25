@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
-import type { DrawingElement } from "./canvas/types";
+import type { DrawingElement, ToolType } from "./canvas/types";
 import { drawElement } from "./canvas/renderer";
 
 export default function App() {
@@ -11,6 +11,12 @@ export default function App() {
   const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
     null,
   );
+  const [currentTool, setCurrentTool] = useState<ToolType>("text");
+  const [selectedElement, setSelectedElement] = useState<DrawingElement | null>(
+    null,
+  );
+  const [isDragging, setIsDragging] = useState(false);
+  const lastMousePos = useRef<{ x: number; y: number } | null>(null);
 
   // Setup phase (runs once)
   useEffect(() => {
@@ -39,16 +45,32 @@ export default function App() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       elements.forEach((element) => {
-        drawElement(element, roughCanvas);
+        drawElement(element, roughCanvas, ctx);
       });
 
       if (currentElement) {
-        drawElement(currentElement, roughCanvas);
+        drawElement(currentElement, roughCanvas, ctx);
       }
     };
 
     render();
   }, [elements, currentElement, roughCanvas]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "l") setCurrentTool("line");
+      if (e.key === "r") setCurrentTool("rect");
+      if (e.key === "c") setCurrentTool("circle");
+      if (e.key === "p") setCurrentTool("pencil");
+      if (e.key === "t") setCurrentTool("text");
+      if (e.key === "s") setCurrentTool("selection");
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const generateId = () => Date.now().toString();
 
   const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
@@ -56,9 +78,55 @@ export default function App() {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
+    if (currentTool === "selection") {
+      for (let i = elements.length - 1; i >= 0; i--) {
+        const element = elements[i];
+        if (isPointInsideElement(mouseX, mouseY, element)) {
+          setSelectedElement(element);
+          setIsDragging(true);
+          lastMousePos.current = { x: mouseX, y: mouseY };
+          return;
+        }
+      }
+
+      setSelectedElement(null);
+      return;
+    }
+
+    if (currentTool === "pencil") {
+      setCurrentElement({
+        id: generateId(),
+        type: "pencil",
+        x1: mouseX,
+        y1: mouseY,
+        x2: mouseX,
+        y2: mouseY,
+        points: [{ x: mouseX, y: mouseY }],
+      });
+      return;
+    }
+
+    if (currentTool === "text") {
+      const text = prompt("Enter text");
+      if (!text) return;
+
+      const newElement: DrawingElement = {
+        id: generateId(),
+        type: "text",
+        x1: mouseX,
+        y1: mouseY,
+        x2: mouseX,
+        y2: mouseY,
+        text,
+      };
+
+      setElements((prev) => [...prev, newElement]);
+      return;
+    }
+
     const newElement: DrawingElement = {
-      id: Date.now().toString(),
-      type: "line",
+      id: generateId(),
+      type: currentTool,
       x1: mouseX,
       y1: mouseY,
       x2: mouseX,
@@ -69,12 +137,71 @@ export default function App() {
   };
 
   const handleMouseMove = (event: MouseEvent<HTMLCanvasElement>) => {
-    if (!currentElement || !canvasRef.current) return;
+    if (!canvasRef.current) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
+    // move selected element
+    if (
+      currentTool === "selection" &&
+      isDragging &&
+      selectedElement &&
+      lastMousePos.current
+    ) {
+      const dx = mouseX - lastMousePos.current.x;
+      const dy = mouseY - lastMousePos.current.y;
+
+      setElements((prev) =>
+        prev.map((el) => {
+          if (el.id !== selectedElement.id) return el;
+
+          if (el.type === "pencil" && el.points) {
+            return {
+              ...el,
+              points: el.points.map((p) => ({
+                x: p.x + dx,
+                y: p.y + dy,
+              })),
+              x1: el.x1 + dx,
+              y1: el.y1 + dy,
+              x2: el.x2 + dx,
+              y2: el.y2 + dy,
+            };
+          }
+
+          return {
+            ...el,
+            x1: el.x1 + dx,
+            y1: el.y1 + dy,
+            x2: el.x2 + dx,
+            y2: el.y2 + dy,
+          };
+        }),
+      );
+
+      lastMousePos.current = { x: mouseX, y: mouseY };
+      return;
+    }
+
+    // Draw shapes
+    if (!currentElement) return;
+
+    // draw pencil
+    if (currentTool === "pencil") {
+      setCurrentElement((prev) => {
+        if (!prev || !prev.points) return prev;
+
+        return {
+          ...prev,
+          points: [...prev.points, { x: mouseX, y: mouseY }],
+        };
+      });
+      return;
+    }
+
+    // draw other shapes
     setCurrentElement({
       ...currentElement,
       x2: mouseX,
@@ -84,9 +211,94 @@ export default function App() {
 
   const handleMouseUp = () => {
     if (currentElement) {
-      setElements(prev => [...prev, currentElement]);
+      setElements((prev) => [...prev, currentElement]);
     }
+    setIsDragging(false);
+    lastMousePos.current = null;
     setCurrentElement(null);
+  };
+
+  // Hit detection
+  const isPointInsideElement = (
+    x: number,
+    y: number,
+    element: DrawingElement,
+  ): boolean => {
+    switch (element.type) {
+      case "line": {
+        const distance = distanceFromPointToLine(x, y, element);
+        return distance < 6; // 6 = arbitrary threshold/tolerance
+      }
+
+      case "rect": {
+        const minX = Math.min(element.x1, element.x2);
+        const minY = Math.min(element.y1, element.y2);
+        const maxX = Math.max(element.x1, element.x2);
+        const maxY = Math.max(element.y1, element.y2);
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
+      }
+
+      case "circle": {
+        const centerX = (element.x1 + element.x2) / 2;
+        const centerY = (element.y1 + element.y2) / 2;
+        const radius =
+          Math.sqrt(
+            (element.x2 - element.x1) ** 2 + (element.y2 - element.y1) ** 2,
+          ) / 2;
+        return (x - centerX) ** 2 + (y - centerY) ** 2 <= radius ** 2;
+      }
+
+      // temporary solution
+      case "pencil": {
+        if (!element.points) return false;
+        return element.points.some((p) => Math.hypot(p.x - x, p.y - y) < 5);
+      }
+
+      // temporary solution
+      case "text": {
+        return (
+          x >= element.x1 &&
+          x <= element.x1 + 100 &&
+          y >= element.y1 &&
+          y <= element.y1 + 20
+        );
+      }
+    }
+  };
+
+  const distanceFromPointToLine = (
+    x: number,
+    y: number,
+    line: DrawingElement,
+  ) => {
+    const A = x - line.x1;
+    const B = y - line.y1;
+    const C = line.x2 - line.x1;
+    const D = line.y2 - line.y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C ** 2 + D ** 2;
+    let param = -1;
+
+    if (lenSq !== 0) param = dot / lenSq;
+
+    let xx, yy;
+
+    if (param < 0) {
+      xx = line.x1;
+      yy = line.y1;
+    } else if (param > 1) {
+      xx = line.x2;
+      yy = line.y2;
+    } else {
+      xx = line.x1 + param * C;
+      yy = line.y1 + param * D;
+    }
+
+    const dx = x - xx;
+    const dy = y - yy;
+
+    return Math.sqrt(dx ** 2 + dy ** 2);
   };
 
   return (

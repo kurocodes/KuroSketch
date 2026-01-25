@@ -1,5 +1,9 @@
 export type ElementType = "line" | "rect" | "circle" | "pencil" | "text";
 
+// export type ToolType = "line" | "rect" | "circle" | "pencil" | "text" | "selection";
+
+export type ToolType = ElementType | "selection";
+
 export interface Point {
   x: number;
   y: number;
