@@ -64,6 +64,7 @@ export default function App() {
       if (e.key === "p") setCurrentTool("pencil");
       if (e.key === "t") setCurrentTool("text");
       if (e.key === "s") setCurrentTool("selection");
+      if (e.key === "e") setCurrentTool("eraser");
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -90,6 +91,17 @@ export default function App() {
       }
 
       setSelectedElement(null);
+      return;
+    }
+
+    if (currentTool === "eraser") {
+      for (let i = elements.length - 1; i >= 0; i--) {
+        const element = elements[i];
+        if (isPointInsideElement(mouseX, mouseY, element)) {
+          setElements(prev => prev.filter(el => el.id !== element.id)); 
+          return;
+        }
+      }
       return;
     }
 
