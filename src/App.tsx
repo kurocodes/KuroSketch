@@ -1,13 +1,20 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
-import type { DrawingElement, ToolType } from "./canvas/types";
+import { type HistoryState, type DrawingElement, type ToolType } from "./canvas/types";
 import { drawElement } from "./canvas/renderer";
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [roughCanvas, setRoughCanvas] = useState<RoughCanvas | null>(null);
-  const [elements, setElements] = useState<DrawingElement[]>([]);
+
+  const [history, setHistory] = useState<HistoryState>({
+    past: [],
+    present: [],
+    future: [],
+  });
+  const elements = history.present;
+  
   const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
     null,
   );
@@ -19,49 +26,36 @@ export default function App() {
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
 
-  const isHistoryNavigation = useRef(false);
-
-  const [undoStack, setUndoStack] = useState<DrawingElement[][]>([]);
-  const [redoStack, setRedoStack] = useState<DrawingElement[][]>([]);
+  // const isHistoryNavigation = useRef(false);
 
   const undo = () => {
-    // console.log("undoStack: ", undoStack);
-    setUndoStack((prev) => {
-      if (prev.length === 0) return prev;
+    setHistory((h) => {
+      if (h.past.length === 0) return h;
 
-      const prevoius = prev[prev.length - 1];
-      if (!prevoius) return prev;
+      const previous = h.past[h.past.length - 1];
+      const newPast = h.past.slice(0, -1);
 
-      isHistoryNavigation.current = true;
-
-      setRedoStack((r) => [...r, elements]);
-      setElements(prevoius);
-
-      isHistoryNavigation.current = false;
-
-      return prev.slice(0, -1);
-    });
-    console.log("Undo --> undoStack: ", undoStack, "redoStack: ", redoStack);
+      return {
+        past: newPast,
+        present: previous,
+        future: [h.present, ...h.future]
+      }
+    })
   };
 
   const redo = () => {
-    // console.log("redoStack: ", redoStack);
-    setRedoStack((prev) => {
-      if (prev.length === 0) return prev;
+    setHistory((h) => {
+      if (h.future.length === 0) return h;
 
-      const next = prev[prev.length - 1];
+      const next = h.future[0];
+      const newFuture = h.future.slice(1);
 
-      isHistoryNavigation.current = true;
-
-      setUndoStack((u) => [...u, elements]);
-      setElements(next);
-
-      isHistoryNavigation.current = false;
-
-      return prev.slice(0, -1);
-    });
-
-    console.log("Redo --> undoStack: ", undoStack, "redoStack: ", redoStack);
+      return {
+        past: [...h.past, h.present],
+        present: next,
+        future: newFuture
+      }
+    })
   };
 
   // Setup phase (runs once)
@@ -189,7 +183,7 @@ export default function App() {
         text,
       };
 
-      setElements((prev) => [...prev, newElement]);
+      commitHistory([...elements, newElement]);
       return;
     }
 
@@ -221,9 +215,10 @@ export default function App() {
     ) {
       const dx = mouseX - lastMousePos.current.x;
       const dy = mouseY - lastMousePos.current.y;
-
-      setElements((prev) =>
-        prev.map((el) => {
+      
+      setHistory((h) => ({
+        ...h,
+        present: h.present.map((el) => {
           if (el.id !== selectedElement.id) return el;
 
           if (el.type === "pencil" && el.points) {
@@ -237,7 +232,7 @@ export default function App() {
               y1: el.y1 + dy,
               x2: el.x2 + dx,
               y2: el.y2 + dy,
-            };
+            }
           }
 
           return {
@@ -246,9 +241,9 @@ export default function App() {
             y1: el.y1 + dy,
             x2: el.x2 + dx,
             y2: el.y2 + dy,
-          };
-        }),
-      );
+          }
+        })
+      }))
 
       lastMousePos.current = { x: mouseX, y: mouseY };
       return;
@@ -286,8 +281,13 @@ export default function App() {
     const snapshot = dragStartSnapshot.current;
 
     if (snapshot) {
-      setUndoStack((prev) => [...prev, snapshot]);
-      setRedoStack([]);
+      // setUndoStack((prev) => [...prev, snapshot]);
+      // setRedoStack([]);
+      setHistory((h) => ({
+        ...h,
+        past: [...h.past, snapshot],
+        future: [],
+      }))
     }
 
     dragStartSnapshot.current = null;
@@ -345,13 +345,11 @@ export default function App() {
   };
 
   const commitHistory = (newElements: DrawingElement[]) => {
-    if (isHistoryNavigation.current) return;
-
-    console.log("undoStack: ", undoStack, "redostack: ", redoStack);
-
-    setUndoStack((prev) => [...prev, elements.map((el) => ({ ...el }))]);
-    setRedoStack([]); // clear redo on new actions
-    setElements(newElements);
+    setHistory((h) => ({
+      past: [...h.past, h.present.map(el => ({ ...el }))],
+      present: newElements,
+      future: [] // clear redo on new actions
+    }))
   };
 
   const distanceFromPointToLine = (

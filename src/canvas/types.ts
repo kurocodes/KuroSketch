@@ -23,3 +23,9 @@ export interface DrawingElement {
   points?: Point[]; // pencil
   text?: string;
 }
+
+export type HistoryState = {
+  past: DrawingElement[][];
+  present: DrawingElement[];
+  future: DrawingElement[][]
+}
