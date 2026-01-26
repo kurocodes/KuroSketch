@@ -19,34 +19,49 @@ export default function App() {
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
 
+  const isHistoryNavigation = useRef(false);
+
   const [undoStack, setUndoStack] = useState<DrawingElement[][]>([]);
   const [redoStack, setRedoStack] = useState<DrawingElement[][]>([]);
 
   const undo = () => {
+    // console.log("undoStack: ", undoStack);
     setUndoStack((prev) => {
       if (prev.length === 0) return prev;
 
       const prevoius = prev[prev.length - 1];
       if (!prevoius) return prev;
 
+      isHistoryNavigation.current = true;
+
       setRedoStack((r) => [...r, elements]);
       setElements(prevoius);
 
+      isHistoryNavigation.current = false;
+
       return prev.slice(0, -1);
     });
+    console.log("Undo --> undoStack: ", undoStack, "redoStack: ", redoStack);
   };
 
   const redo = () => {
+    // console.log("redoStack: ", redoStack);
     setRedoStack((prev) => {
       if (prev.length === 0) return prev;
 
       const next = prev[prev.length - 1];
 
+      isHistoryNavigation.current = true;
+
       setUndoStack((u) => [...u, elements]);
       setElements(next);
 
+      isHistoryNavigation.current = false;
+
       return prev.slice(0, -1);
     });
+
+    console.log("Redo --> undoStack: ", undoStack, "redoStack: ", redoStack);
   };
 
   // Setup phase (runs once)
@@ -108,7 +123,7 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [elements, undoStack, redoStack]);
+  }, []);
 
   const generateId = () => Date.now().toString();
 
@@ -330,6 +345,10 @@ export default function App() {
   };
 
   const commitHistory = (newElements: DrawingElement[]) => {
+    if (isHistoryNavigation.current) return;
+
+    console.log("undoStack: ", undoStack, "redostack: ", redoStack);
+
     setUndoStack((prev) => [...prev, elements.map((el) => ({ ...el }))]);
     setRedoStack([]); // clear redo on new actions
     setElements(newElements);
