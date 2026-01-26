@@ -17,6 +17,37 @@ export default function App() {
   );
   const [isDragging, setIsDragging] = useState(false);
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
+  const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
+
+  const [undoStack, setUndoStack] = useState<DrawingElement[][]>([]);
+  const [redoStack, setRedoStack] = useState<DrawingElement[][]>([]);
+
+  const undo = () => {
+    setUndoStack((prev) => {
+      if (prev.length === 0) return prev;
+
+      const prevoius = prev[prev.length - 1];
+      if (!prevoius) return prev;
+
+      setRedoStack((r) => [...r, elements]);
+      setElements(prevoius);
+
+      return prev.slice(0, -1);
+    });
+  };
+
+  const redo = () => {
+    setRedoStack((prev) => {
+      if (prev.length === 0) return prev;
+
+      const next = prev[prev.length - 1];
+
+      setUndoStack((u) => [...u, elements]);
+      setElements(next);
+
+      return prev.slice(0, -1);
+    });
+  };
 
   // Setup phase (runs once)
   useEffect(() => {
@@ -65,11 +96,19 @@ export default function App() {
       if (e.key === "t") setCurrentTool("text");
       if (e.key === "s") setCurrentTool("selection");
       if (e.key === "e") setCurrentTool("eraser");
+      if (e.ctrlKey && e.key === "z") {
+        e.preventDefault();
+        undo();
+      }
+      if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "z"))) {
+        e.preventDefault();
+        redo();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [elements, undoStack, redoStack]);
 
   const generateId = () => Date.now().toString();
 
@@ -86,6 +125,9 @@ export default function App() {
           setSelectedElement(element);
           setIsDragging(true);
           lastMousePos.current = { x: mouseX, y: mouseY };
+
+          dragStartSnapshot.current = elements.map((el) => ({ ...el }));
+
           return;
         }
       }
@@ -98,7 +140,7 @@ export default function App() {
       for (let i = elements.length - 1; i >= 0; i--) {
         const element = elements[i];
         if (isPointInsideElement(mouseX, mouseY, element)) {
-          setElements(prev => prev.filter(el => el.id !== element.id)); 
+          commitHistory(elements.filter((el) => el.id !== element.id));
           return;
         }
       }
@@ -223,8 +265,17 @@ export default function App() {
 
   const handleMouseUp = () => {
     if (currentElement) {
-      setElements((prev) => [...prev, currentElement]);
+      // setElements((prev) => [...prev, currentElement]);
+      commitHistory([...elements, currentElement]);
     }
+    const snapshot = dragStartSnapshot.current;
+
+    if (snapshot) {
+      setUndoStack((prev) => [...prev, snapshot]);
+      setRedoStack([]);
+    }
+
+    dragStartSnapshot.current = null;
     setIsDragging(false);
     lastMousePos.current = null;
     setCurrentElement(null);
@@ -276,6 +327,12 @@ export default function App() {
         );
       }
     }
+  };
+
+  const commitHistory = (newElements: DrawingElement[]) => {
+    setUndoStack((prev) => [...prev, elements.map((el) => ({ ...el }))]);
+    setRedoStack([]); // clear redo on new actions
+    setElements(newElements);
   };
 
   const distanceFromPointToLine = (
