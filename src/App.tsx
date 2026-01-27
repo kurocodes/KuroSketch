@@ -1,69 +1,30 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
-import { type HistoryState, type DrawingElement, type ToolType } from "./canvas/types";
+import { type ToolType } from "./canvas/types";
 import { drawElement } from "./canvas/renderer";
+import useHistory from "./hooks/useHistory";
+import { useKeyboard } from "./hooks/useKeyboard";
+import { useCanvas } from "./hooks/useCanvas";
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [roughCanvas, setRoughCanvas] = useState<RoughCanvas | null>(null);
 
-  const [history, setHistory] = useState<HistoryState>({
-    past: [],
-    present: [],
-    future: [],
-  });
-  const elements = history.present;
-  
-  const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
-    null,
-  );
+  const { elements, setHistory, commit, undo, redo } = useHistory();
   const [currentTool, setCurrentTool] = useState<ToolType>("text");
-  const [selectedElement, setSelectedElement] = useState<DrawingElement | null>(
-    null,
-  );
-  const [isDragging, setIsDragging] = useState(false);
-  const lastMousePos = useRef<{ x: number; y: number } | null>(null);
-  const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
-
-  // const isHistoryNavigation = useRef(false);
-
-  const undo = () => {
-    setHistory((h) => {
-      if (h.past.length === 0) return h;
-
-      const previous = h.past[h.past.length - 1];
-      const newPast = h.past.slice(0, -1);
-
-      return {
-        past: newPast,
-        present: previous,
-        future: [h.present, ...h.future]
-      }
-    })
-  };
-
-  const redo = () => {
-    setHistory((h) => {
-      if (h.future.length === 0) return h;
-
-      const next = h.future[0];
-      const newFuture = h.future.slice(1);
-
-      return {
-        past: [...h.past, h.present],
-        present: next,
-        future: newFuture
-      }
-    })
-  };
+  const { currentElement, onMouseDown, onMouseMove, onMouseUp } = useCanvas({
+    elements,
+    currentTool,
+    commit,
+    setHistory,
+  });
 
   // Setup phase (runs once)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // set canvas size
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -96,30 +57,7 @@ export default function App() {
     render();
   }, [elements, currentElement, roughCanvas]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "l") setCurrentTool("line");
-      if (e.key === "r") setCurrentTool("rect");
-      if (e.key === "c") setCurrentTool("circle");
-      if (e.key === "p") setCurrentTool("pencil");
-      if (e.key === "t") setCurrentTool("text");
-      if (e.key === "s") setCurrentTool("selection");
-      if (e.key === "e") setCurrentTool("eraser");
-      if (e.ctrlKey && e.key === "z") {
-        e.preventDefault();
-        undo();
-      }
-      if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "z"))) {
-        e.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const generateId = () => Date.now().toString();
+  useKeyboard(setCurrentTool, undo, redo);
 
   const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
@@ -127,76 +65,7 @@ export default function App() {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    if (currentTool === "selection") {
-      for (let i = elements.length - 1; i >= 0; i--) {
-        const element = elements[i];
-        if (isPointInsideElement(mouseX, mouseY, element)) {
-          setSelectedElement(element);
-          setIsDragging(true);
-          lastMousePos.current = { x: mouseX, y: mouseY };
-
-          dragStartSnapshot.current = elements.map((el) => ({ ...el }));
-
-          return;
-        }
-      }
-
-      setSelectedElement(null);
-      return;
-    }
-
-    if (currentTool === "eraser") {
-      for (let i = elements.length - 1; i >= 0; i--) {
-        const element = elements[i];
-        if (isPointInsideElement(mouseX, mouseY, element)) {
-          commitHistory(elements.filter((el) => el.id !== element.id));
-          return;
-        }
-      }
-      return;
-    }
-
-    if (currentTool === "pencil") {
-      setCurrentElement({
-        id: generateId(),
-        type: "pencil",
-        x1: mouseX,
-        y1: mouseY,
-        x2: mouseX,
-        y2: mouseY,
-        points: [{ x: mouseX, y: mouseY }],
-      });
-      return;
-    }
-
-    if (currentTool === "text") {
-      const text = prompt("Enter text");
-      if (!text) return;
-
-      const newElement: DrawingElement = {
-        id: generateId(),
-        type: "text",
-        x1: mouseX,
-        y1: mouseY,
-        x2: mouseX,
-        y2: mouseY,
-        text,
-      };
-
-      commitHistory([...elements, newElement]);
-      return;
-    }
-
-    const newElement: DrawingElement = {
-      id: generateId(),
-      type: currentTool,
-      x1: mouseX,
-      y1: mouseY,
-      x2: mouseX,
-      y2: mouseY,
-    };
-
-    setCurrentElement(newElement);
+    onMouseDown(mouseX, mouseY);
   };
 
   const handleMouseMove = (event: MouseEvent<HTMLCanvasElement>) => {
@@ -206,185 +75,7 @@ export default function App() {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    // move selected element
-    if (
-      currentTool === "selection" &&
-      isDragging &&
-      selectedElement &&
-      lastMousePos.current
-    ) {
-      const dx = mouseX - lastMousePos.current.x;
-      const dy = mouseY - lastMousePos.current.y;
-      
-      setHistory((h) => ({
-        ...h,
-        present: h.present.map((el) => {
-          if (el.id !== selectedElement.id) return el;
-
-          if (el.type === "pencil" && el.points) {
-            return {
-              ...el,
-              points: el.points.map((p) => ({
-                x: p.x + dx,
-                y: p.y + dy,
-              })),
-              x1: el.x1 + dx,
-              y1: el.y1 + dy,
-              x2: el.x2 + dx,
-              y2: el.y2 + dy,
-            }
-          }
-
-          return {
-            ...el,
-            x1: el.x1 + dx,
-            y1: el.y1 + dy,
-            x2: el.x2 + dx,
-            y2: el.y2 + dy,
-          }
-        })
-      }))
-
-      lastMousePos.current = { x: mouseX, y: mouseY };
-      return;
-    }
-
-    // Draw shapes
-    if (!currentElement) return;
-
-    // draw pencil
-    if (currentTool === "pencil") {
-      setCurrentElement((prev) => {
-        if (!prev || !prev.points) return prev;
-
-        return {
-          ...prev,
-          points: [...prev.points, { x: mouseX, y: mouseY }],
-        };
-      });
-      return;
-    }
-
-    // draw other shapes
-    setCurrentElement({
-      ...currentElement,
-      x2: mouseX,
-      y2: mouseY,
-    });
-  };
-
-  const handleMouseUp = () => {
-    if (currentElement) {
-      // setElements((prev) => [...prev, currentElement]);
-      commitHistory([...elements, currentElement]);
-    }
-    const snapshot = dragStartSnapshot.current;
-
-    if (snapshot) {
-      // setUndoStack((prev) => [...prev, snapshot]);
-      // setRedoStack([]);
-      setHistory((h) => ({
-        ...h,
-        past: [...h.past, snapshot],
-        future: [],
-      }))
-    }
-
-    dragStartSnapshot.current = null;
-    setIsDragging(false);
-    lastMousePos.current = null;
-    setCurrentElement(null);
-  };
-
-  // Hit detection
-  const isPointInsideElement = (
-    x: number,
-    y: number,
-    element: DrawingElement,
-  ): boolean => {
-    switch (element.type) {
-      case "line": {
-        const distance = distanceFromPointToLine(x, y, element);
-        return distance < 6; // 6 = arbitrary threshold/tolerance
-      }
-
-      case "rect": {
-        const minX = Math.min(element.x1, element.x2);
-        const minY = Math.min(element.y1, element.y2);
-        const maxX = Math.max(element.x1, element.x2);
-        const maxY = Math.max(element.y1, element.y2);
-        return x >= minX && x <= maxX && y >= minY && y <= maxY;
-      }
-
-      case "circle": {
-        const centerX = (element.x1 + element.x2) / 2;
-        const centerY = (element.y1 + element.y2) / 2;
-        const radius =
-          Math.sqrt(
-            (element.x2 - element.x1) ** 2 + (element.y2 - element.y1) ** 2,
-          ) / 2;
-        return (x - centerX) ** 2 + (y - centerY) ** 2 <= radius ** 2;
-      }
-
-      // temporary solution
-      case "pencil": {
-        if (!element.points) return false;
-        return element.points.some((p) => Math.hypot(p.x - x, p.y - y) < 5);
-      }
-
-      // temporary solution
-      case "text": {
-        return (
-          x >= element.x1 &&
-          x <= element.x1 + 100 &&
-          y >= element.y1 &&
-          y <= element.y1 + 20
-        );
-      }
-    }
-  };
-
-  const commitHistory = (newElements: DrawingElement[]) => {
-    setHistory((h) => ({
-      past: [...h.past, h.present.map(el => ({ ...el }))],
-      present: newElements,
-      future: [] // clear redo on new actions
-    }))
-  };
-
-  const distanceFromPointToLine = (
-    x: number,
-    y: number,
-    line: DrawingElement,
-  ) => {
-    const A = x - line.x1;
-    const B = y - line.y1;
-    const C = line.x2 - line.x1;
-    const D = line.y2 - line.y1;
-
-    const dot = A * C + B * D;
-    const lenSq = C ** 2 + D ** 2;
-    let param = -1;
-
-    if (lenSq !== 0) param = dot / lenSq;
-
-    let xx, yy;
-
-    if (param < 0) {
-      xx = line.x1;
-      yy = line.y1;
-    } else if (param > 1) {
-      xx = line.x2;
-      yy = line.y2;
-    } else {
-      xx = line.x1 + param * C;
-      yy = line.y1 + param * D;
-    }
-
-    const dx = x - xx;
-    const dy = y - yy;
-
-    return Math.sqrt(dx ** 2 + dy ** 2);
+    onMouseMove(mouseX, mouseY);
   };
 
   return (
@@ -393,7 +84,7 @@ export default function App() {
         ref={canvasRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+        onMouseUp={onMouseUp}
         style={{ display: "block", backgroundColor: "#fdfdfd" }}
       />
     </div>
