@@ -11,12 +11,13 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [roughCanvas, setRoughCanvas] = useState<RoughCanvas | null>(null);
 
-  const { elements, setHistory, commit, undo, redo } = useHistory();
+  const { elements, setHistory, commit, preview, undo, redo } = useHistory();
   const [currentTool, setCurrentTool] = useState<ToolType>("text");
   const { currentElement, onMouseDown, onMouseMove, onMouseUp } = useCanvas({
     elements,
     currentTool,
     commit,
+    preview,
     setHistory,
   });
 

@@ -17,6 +17,13 @@ export default function useHistory() {
     }));
   };
 
+  const preview = (updater: (els: DrawingElement[]) => DrawingElement[]) => {
+    setHistory((h) => ({
+      ...h, 
+      present: updater(h.present)
+    }))
+  }
+
   const undo = () => {
     setHistory((h) => {
       if (h.past.length === 0) return h;
@@ -47,5 +54,5 @@ export default function useHistory() {
     });
   };
 
-  return { elements, setHistory, commit: commitHistory, undo, redo };
+  return { elements, setHistory, commit: commitHistory, preview, undo, redo };
 }
