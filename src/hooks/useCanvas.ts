@@ -2,6 +2,13 @@ import React, { useRef, useState } from "react";
 import { isPointInsideElement } from "../canvas/hitTest";
 import { type DrawingElement, type HistoryState, type ToolType } from "../canvas/types";
 import { moveElement } from "../canvas/elementUtils";
+import type { ToolHandler } from "../canvas/tools";
+import { selectionTool } from "../canvas/tools/selection";
+
+const tools: Record<ToolType, ToolHandler | undefined> = {
+  selection: selectionTool,
+  // more later
+}
 
 export function useCanvas({
   elements,
@@ -24,6 +31,8 @@ export function useCanvas({
 
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
+
+  const tool = tools[currentTool];
 
 //   const generateId = () => `${Date.now()}-${Math.random()}`;
   const generateId = () => Date.now().toString();
