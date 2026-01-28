@@ -40,9 +40,7 @@ export function useCanvas({
   const [selectedElement, setSelectedElement] = useState<DrawingElement | null>(
     null,
   );
-  // const [isDragging, setIsDragging] = useState(false);
-  // console.log(isDragging);
-
+  const [isDragging, setIsDragging] = useState(false);
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
 
@@ -60,7 +58,8 @@ export function useCanvas({
     setHistory,
     selectedElement,
     setSelectedElement,
-    // setIsDragging,
+    isDragging,
+    setIsDragging,
     lastMousePos,
     dragStartSnapshot,
     generateId,

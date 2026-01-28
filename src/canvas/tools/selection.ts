@@ -16,7 +16,6 @@ export const selectionTool: ToolHandler = {
     }
 
     ctx.setSelectedElement(null);
-    // return;
   },
 
   onMouseMove(x, y, ctx) {
@@ -32,14 +31,13 @@ export const selectionTool: ToolHandler = {
     );
 
     ctx.lastMousePos.current = { x, y };
-    // return;
   },
 
   onMouseUp(ctx) {
-    if (ctx.dragStartSnapshot.current) {
-      // commit current elements (already previewed)
-      ctx.commit(ctx.elements);
-    }
+    const snapshot = ctx.dragStartSnapshot.current;
+    if (!snapshot) return;
+
+    ctx.commit(ctx.elements, snapshot);
 
     ctx.lastMousePos.current = null;
     ctx.dragStartSnapshot.current = null;

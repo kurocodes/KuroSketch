@@ -9,9 +9,14 @@ export default function useHistory() {
   });
   const elements = history.present;
 
-  const commitHistory = (newElements: DrawingElement[]) => {
+  const commitHistory = (
+    newElements: DrawingElement[],
+    pastOverride?: DrawingElement[],
+  ) => {
     setHistory((h) => ({
-      past: [...h.past, h.present.map((el) => ({ ...el }))],
+      past: pastOverride
+        ? [...h.past, pastOverride.map((el) => ({ ...el }))]
+        : [...h.past, h.present.map((el) => ({ ...el }))],
       present: newElements,
       future: [], // clear redo on new actions
     }));
@@ -19,10 +24,10 @@ export default function useHistory() {
 
   const preview = (updater: (els: DrawingElement[]) => DrawingElement[]) => {
     setHistory((h) => ({
-      ...h, 
-      present: updater(h.present)
-    }))
-  }
+      ...h,
+      present: updater(h.present),
+    }));
+  };
 
   const undo = () => {
     setHistory((h) => {

@@ -7,14 +7,15 @@ export type ToolContext = {
   setCurrentElement: React.Dispatch<
     React.SetStateAction<DrawingElement | null>
   >;
-  commit: (els: DrawingElement[]) => void;
+  commit: (els: DrawingElement[], pastOverride?: DrawingElement[]) => void;
   preview: (fn: (els: DrawingElement[]) => DrawingElement[]) => void;
   setHistory: React.Dispatch<React.SetStateAction<HistoryState>>;
 
   // drag helpers
   selectedElement: DrawingElement | null;
   setSelectedElement: (el: DrawingElement | null) => void;
-//   setIsDragging: (v: boolean) => void;
+  isDragging: boolean;
+  setIsDragging: (v: boolean) => void;
   lastMousePos: React.RefObject<{ x: number; y: number } | null>;
   dragStartSnapshot: React.RefObject<DrawingElement[] | null>;
 

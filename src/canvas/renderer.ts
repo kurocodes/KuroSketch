@@ -1,7 +1,11 @@
 import type { RoughCanvas } from "roughjs/bin/canvas";
 import type { DrawingElement } from "./types";
 
-export function drawElement(element: DrawingElement, rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+export function drawElement(
+  element: DrawingElement,
+  rc: RoughCanvas,
+  ctx: CanvasRenderingContext2D,
+) {
   const { x1, y1, x2, y2 } = element;
 
   switch (element.type) {
@@ -30,7 +34,10 @@ export function drawElement(element: DrawingElement, rc: RoughCanvas, ctx: Canva
 
     case "pencil": {
       if (!element.points) return;
-      rc.linearPath(element.points.map(p => [p.x, p.y]), { seed: Number(element.id) });
+      rc.linearPath(
+        element.points.map((p) => [p.x, p.y]),
+        { seed: Number(element.id) },
+      );
       break;
     }
 
