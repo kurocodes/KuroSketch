@@ -10,7 +10,10 @@ export function drawElement(
 
   switch (element.type) {
     case "line":
-      rc.line(x1, y1, x2, y2, { seed: Number(element.id) });
+      rc.line(x1, y1, x2, y2, {
+        seed: Number(element.id),
+        stroke: element.stroke ?? "#000",
+      });
       break;
 
     case "rect":
@@ -19,7 +22,7 @@ export function drawElement(
         Math.min(y1, y2),
         Math.abs(x2 - x1),
         Math.abs(y2 - y1),
-        { seed: Number(element.id) },
+        { seed: Number(element.id), stroke: element.stroke || "#000" },
       );
       break;
 
@@ -28,7 +31,10 @@ export function drawElement(
       const height = Math.abs(y2 - y1);
       const diameter = Math.max(width, height);
 
-      rc.circle(x1, y1, diameter, { seed: Number(element.id) });
+      rc.circle(x1, y1, diameter, {
+        seed: Number(element.id),
+        stroke: element.stroke ?? "#000",
+      });
       break;
     }
 
@@ -36,14 +42,14 @@ export function drawElement(
       if (!element.points) return;
       rc.linearPath(
         element.points.map((p) => [p.x, p.y]),
-        { seed: Number(element.id) },
+        { seed: Number(element.id), stroke: element.stroke ?? "#000" },
       );
       break;
     }
 
     case "text":
       ctx.font = "16px sans-serif";
-      ctx.fillStyle = "#000";
+      ctx.fillStyle = element.stroke ?? "#000";
       ctx.textBaseline = "top";
       if (element.text) ctx.fillText(element.text, x1, y1);
       break;

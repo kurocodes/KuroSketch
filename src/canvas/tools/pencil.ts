@@ -11,6 +11,7 @@ export const pencilTool: ToolHandler = {
       x2: x,
       y2: y,
       points: [{ x: x, y: y }],
+      stroke: ctx.defaultStroke,
     };
 
     ctx.setCurrentElement(element);

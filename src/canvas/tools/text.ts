@@ -15,6 +15,7 @@ export const textTool: ToolHandler = {
         x2: x,
         y2: y,
         text,
+        stroke: ctx.defaultStroke,
       },
     ]);
   },

@@ -27,12 +27,14 @@ export function useCanvas({
   commit,
   preview,
   setHistory,
+  defaultStroke,
 }: {
   elements: DrawingElement[];
   currentTool: ToolType;
   commit: (els: DrawingElement[]) => void;
   preview: (fn: (els: DrawingElement[]) => DrawingElement[]) => void;
   setHistory: React.Dispatch<React.SetStateAction<HistoryState>>;
+  defaultStroke: string;
 }) {
   const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
     null,
@@ -63,6 +65,7 @@ export function useCanvas({
     lastMousePos,
     dragStartSnapshot,
     generateId,
+    defaultStroke,
   };
 
   const onMouseDown = (x: number, y: number) => {

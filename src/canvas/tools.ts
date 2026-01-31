@@ -20,6 +20,8 @@ export type ToolContext = {
   dragStartSnapshot: React.RefObject<DrawingElement[] | null>;
 
   generateId: () => string;
+
+  defaultStroke: string;
 };
 
 export type ToolHandler = {

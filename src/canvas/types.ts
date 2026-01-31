@@ -20,6 +20,8 @@ export interface DrawingElement {
   y2: number;
 
   // Optional fields
+  stroke?: string;
+
   points?: Point[]; // pencil
   text?: string;
 }

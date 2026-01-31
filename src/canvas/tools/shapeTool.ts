@@ -11,6 +11,7 @@ export function createShapeTool(type: ElementType): ToolHandler {
         y1: y,
         x2: x,
         y2: y,
+        stroke: ctx.defaultStroke,
       };
 
       ctx.setCurrentElement(element);

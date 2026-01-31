@@ -6,6 +6,10 @@ import { drawElement } from "./canvas/renderer";
 import useHistory from "./hooks/useHistory";
 import { useKeyboard } from "./hooks/useKeyboard";
 import { useCanvas } from "./hooks/useCanvas";
+import { useCamera } from "./hooks/useCamera";
+import { screenToWorld } from "./canvas/camera";
+import { useKeyState } from "./hooks/useKeyState";
+import { useTheme } from "./hooks/useTheme";
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -13,13 +17,18 @@ export default function App() {
 
   const { elements, setHistory, commit, preview, undo, redo } = useHistory();
   const [currentTool, setCurrentTool] = useState<ToolType>("text");
+  const { mode, colors, toggleTheme } = useTheme();
   const { currentElement, onMouseDown, onMouseMove, onMouseUp } = useCanvas({
     elements,
     currentTool,
     commit,
     preview,
     setHistory,
+    defaultStroke: colors.defaultStroke,
   });
+  const { camera, startPan, pan, endPan, zoomAt } = useCamera();
+  
+  const spacePressed = useKeyState(" ");
 
   // Setup phase (runs once)
   useEffect(() => {
@@ -46,6 +55,10 @@ export default function App() {
       // clear entire canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      ctx.save();
+      ctx.translate(camera.x, camera.y);
+      ctx.scale(camera.zoom, camera.zoom);
+
       elements.forEach((element) => {
         drawElement(element, roughCanvas, ctx);
       });
@@ -53,30 +66,50 @@ export default function App() {
       if (currentElement) {
         drawElement(currentElement, roughCanvas, ctx);
       }
+
+      ctx.restore();
     };
 
     render();
-  }, [elements, currentElement, roughCanvas]);
+  }, [elements, currentElement, roughCanvas, camera]);
 
   useKeyboard(setCurrentTool, undo, redo);
 
-  const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
 
-    onMouseDown(mouseX, mouseY);
+    const rect = canvasRef.current.getBoundingClientRect();
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+
+    if (spacePressed) {
+      startPan(screenX, screenY);
+      return;
+    }
+
+    const { x, y } = screenToWorld(screenX, screenY, camera);
+    onMouseDown(x, y);
   };
 
-  const handleMouseMove = (event: MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
 
-    onMouseMove(mouseX, mouseY);
+    if (spacePressed && e.buttons === 1) {
+      pan(screenX, screenY);
+      return;
+    }
+
+    const { x, y } = screenToWorld(screenX, screenY, camera);
+    onMouseMove(x, y);
+  };
+
+  const handleMouseUp = () => {
+    endPan();
+    if (!spacePressed) onMouseUp();
   };
 
   return (
@@ -85,9 +118,25 @@ export default function App() {
         ref={canvasRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onMouseUp={onMouseUp}
-        style={{ display: "block", backgroundColor: "#fdfdfd" }}
+        onMouseUp={handleMouseUp}
+        onWheel={(e) => {
+          e.preventDefault();
+
+          const rect = canvasRef.current!.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          zoomAt(e.deltaY, x, y);
+        }}
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "block",
+          backgroundColor: colors.canvasBg,
+        }}
       />
+
+      <button onClick={toggleTheme} className="fixed top-4 right-4 z-10">{mode}</button>
     </div>
   );
 }
