@@ -14,8 +14,10 @@ export default function ToggleButton({
   const { colors } = useTheme();
 
   return (
-    <div
+    <motion.div
       role="button"
+      whileHover={{ backgroundColor: colors.uiBorder }}
+      whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
       className="fixed top-4 right-4 z-10 cursor-pointer border-2 rounded-xl p-1"
       style={{
@@ -27,9 +29,9 @@ export default function ToggleButton({
         {mode === "dark" ? (
           <motion.div
             key="dark"
-            initial={{ scale: 0.95, filter: "blur(1px)" }}
+            initial={{ scale: 0.9, filter: "blur(1px)" }}
             animate={{ scale: 1, filter: "blur(0px)" }}
-            exit={{ scale: 0.95, filter: "blur(1px)" }}
+            exit={{ scale: 0.9, filter: "blur(1px)" }}
             transition={{ duration: 0.1, ease: "easeOut" }}
           >
             <MdDarkMode size={24} color={colors.uiText} />
@@ -37,15 +39,15 @@ export default function ToggleButton({
         ) : (
           <motion.div
             key="light"
-            initial={{ scale: 0.95, filter: "blur(1px)" }}
+            initial={{ scale: 0.9, filter: "blur(1px)" }}
             animate={{ scale: 1, filter: "blur(0px)" }}
-            exit={{ scale: 0.95, filter: "blur(1px)" }}
+            exit={{ scale: 0.9, filter: "blur(1px)" }}
             transition={{ duration: 0.18, ease: "easeOut" }}
           >
             <MdLightMode size={24} color={colors.uiText} />
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
