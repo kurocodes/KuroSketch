@@ -1,10 +1,10 @@
 import { MdDarkMode } from "react-icons/md";
 import { MdLightMode } from "react-icons/md";
 import { AnimatePresence, motion } from "motion/react";
-import type { ThemeMode } from "../theme/theme";
-import { useTheme } from "../hooks/useTheme";
+import type { ThemeMode } from "../../theme/theme";
+import { useTheme } from "../../hooks/useTheme";
 
-export default function ToggleButton({
+export default function ThemeToggle({
   mode,
   toggleTheme,
 }: {
