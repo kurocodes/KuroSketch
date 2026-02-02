@@ -10,6 +10,7 @@ import { useCamera } from "./hooks/useCamera";
 import { screenToWorld } from "./canvas/camera";
 import { useKeyState } from "./hooks/useKeyState";
 import { useTheme } from "./hooks/useTheme";
+import ToggleButton from "./components/ToggleButton";
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -136,7 +137,18 @@ export default function App() {
         }}
       />
 
-      <button onClick={toggleTheme} className="fixed top-4 right-4 z-10">{mode}</button>
+      {/* <div className="fixed inset-0 z-20 pointer-events-none border rounded-lg m-4" style={{ borderColor: colors.uiBorder }}> */}
+        {/* <div className="fixed top-0 left-4" style={{ backgroundColor: colors.uiBg, color: colors.uiText }}>KuroSketch</div> */}
+        {/* <button onClick={toggleTheme} className="fixed top-4 right-4 z-10 pointer-events-auto">{mode}</button> */}
+        <ToggleButton mode={mode} toggleTheme={toggleTheme} />
+        <div className="fixed bottom-4 left-4 bg-gray-400">Zoom and undo/redo buttons</div>
+        <div className="fixed bottom-0 left-1/2 bg-green-300">Toolbar</div>
+        <div className="fixed bottom-4 right-4 bg-gray-400">Help button</div>
+
+        <div className="fixed right-0 top-1/2 bg-pink-400">Social media buttons</div>
+      {/* </div> */}
+
+      
     </div>
   );
 }
