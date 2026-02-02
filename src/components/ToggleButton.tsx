@@ -36,7 +36,7 @@ export default function ToggleButton({
           </motion.div>
         ) : (
           <motion.div
-           key="light"
+            key="light"
             initial={{ scale: 0.95, filter: "blur(1px)" }}
             animate={{ scale: 1, filter: "blur(0px)" }}
             exit={{ scale: 0.95, filter: "blur(1px)" }}
