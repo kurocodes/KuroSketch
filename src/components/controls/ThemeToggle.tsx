@@ -19,7 +19,7 @@ export default function ThemeToggle({
       whileHover={{ backgroundColor: colors.uiBorder }}
       whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
-      className="fixed top-4 right-4 z-10 cursor-pointer border-2 rounded-xl p-1"
+      className="fixed top-4 right-4 z-10 cursor-pointer border-2 rounded-2xl p-2"
       style={{
         borderColor: colors.uiBorder,
         backgroundColor: colors.uiBg,

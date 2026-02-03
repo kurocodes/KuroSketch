@@ -7,6 +7,7 @@ import { useCanvas } from "./hooks/useCanvas";
 import { useKeyboard } from "./hooks/useKeyboard";
 import CanvasStage from "./components/canvas/CanvasStage";
 import ThemeToggle from "./components/controls/ThemeToggle";
+import Toolbar from "./components/toolbar/Toolbar";
 
 export default function App() {
   // global editor state
@@ -48,6 +49,7 @@ export default function App() {
 
       {/* UI LAYER */}
       <ThemeToggle mode={theme.mode} toggleTheme={theme.toggleTheme} />
+      <Toolbar />
     </>
   );
 }

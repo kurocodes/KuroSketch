@@ -36,93 +36,93 @@ export default function CanvasStage({
   zoomAt,
   canvasBg,
 }: Props) {
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const roughRef = useRef<RoughCanvas | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const roughRef = useRef<RoughCanvas | null>(null);
 
-    const spacePressed = useKeyState(" ");
+  const spacePressed = useKeyState(" ");
 
-    // setup (runs once)
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+  // setup (runs once)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        roughRef.current = rough.canvas(canvas);
-    }, []);
+    roughRef.current = rough.canvas(canvas);
+  }, []);
 
-    // render (runs every frame)
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const rc = roughRef.current;
-        if (!canvas || !rc) return;
+  // render (runs every frame)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const rc = roughRef.current;
+    if (!canvas || !rc) return;
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.save();
-        ctx.translate(camera.x, camera.y);
-        ctx.scale(camera.zoom, camera.zoom);
+    ctx.save();
+    ctx.translate(camera.x, camera.y);
+    ctx.scale(camera.zoom, camera.zoom);
 
-        elements.forEach(el => drawElement(el, rc, ctx));
-        if (currentElement) drawElement(currentElement, rc, ctx);
+    elements.forEach((el) => drawElement(el, rc, ctx));
+    if (currentElement) drawElement(currentElement, rc, ctx);
 
-        ctx.restore();
-    }, [elements, currentElement, camera]);
+    ctx.restore();
+  }, [elements, currentElement, camera]);
 
-    // mouse handlers
-    const getScreenPos = (e: React.MouseEvent) => {
-        const rect = canvasRef.current!.getBoundingClientRect();
-        return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
+  // mouse handlers
+  const getScreenPos = (e: React.MouseEvent) => {
+    const rect = canvasRef.current!.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "block",
+        backgroundColor: canvasBg,
+        cursor: spacePressed ? "grab" : "crosshair",
+      }}
+      onMouseDown={(e) => {
+        const { x, y } = getScreenPos(e);
+
+        if (spacePressed) {
+          startPan(x, y);
+          return;
         }
-    }
 
-    return (
-        <canvas
-            ref={canvasRef}
-            style={{
-                width: "100vw",
-                height: "100vh",
-                display: "block",
-                backgroundColor: canvasBg,
-                cursor: spacePressed ? "grab" : "crosshair",
-            }}
-            onMouseDown={(e) => {
-                const { x, y } = getScreenPos(e);
+        const world = screenToWorld(x, y, camera);
+        onMouseDown(world.x, world.y);
+      }}
+      onMouseMove={(e) => {
+        const { x, y } = getScreenPos(e);
 
-                if (spacePressed) {
-                    startPan(x, y);
-                    return;
-                }
+        if (spacePressed && e.buttons === 1) {
+          pan(x, y);
+          return;
+        }
 
-                const world = screenToWorld(x, y, camera);
-                onMouseDown(world.x, world.y);
-            }}
-            onMouseMove={(e) => {
-                const { x, y } = getScreenPos(e);
-
-                if (spacePressed && e.buttons === 1) {
-                    pan(x, y);
-                    return;
-                }
-
-                const world = screenToWorld(x, y, camera);
-                onMouseMove(world.x, world.y);
-            }}
-            onMouseUp={() => {
-                endPan();
-                if (!spacePressed) onMouseUp();
-            }}
-            onWheel={(e) => {
-                e.preventDefault();
-                const { x, y } = getScreenPos(e);
-                zoomAt(e.deltaY, x, y);
-            }}
-        />
-    )
-};
+        const world = screenToWorld(x, y, camera);
+        onMouseMove(world.x, world.y);
+      }}
+      onMouseUp={() => {
+        endPan();
+        if (!spacePressed) onMouseUp();
+      }}
+      onWheel={(e) => {
+        e.preventDefault();
+        const { x, y } = getScreenPos(e);
+        zoomAt(e.deltaY, x, y);
+      }}
+    />
+  );
+}
