@@ -10,6 +10,8 @@ import { pencilTool } from "../canvas/tools/pencil";
 import { circleTool, lineTool, rectTool } from "../canvas/tools/shapeTool";
 import { textTool } from "../canvas/tools/text";
 import { eraserTool } from "../canvas/tools/eraser";
+import { panTool } from "../canvas/tools/pan";
+import type { Camera } from "../canvas/camera";
 
 const tools: Record<ToolType, ToolHandler | undefined> = {
   selection: selectionTool,
@@ -19,6 +21,7 @@ const tools: Record<ToolType, ToolHandler | undefined> = {
   circle: circleTool,
   text: textTool,
   eraser: eraserTool,
+  pan: panTool,
 };
 
 export function useCanvas({
@@ -28,6 +31,8 @@ export function useCanvas({
   preview,
   setHistory,
   defaultStroke,
+  setCamera,
+  forcePan,
 }: {
   elements: DrawingElement[];
   currentTool: ToolType;
@@ -35,6 +40,8 @@ export function useCanvas({
   preview: (fn: (els: DrawingElement[]) => DrawingElement[]) => void;
   setHistory: React.Dispatch<React.SetStateAction<HistoryState>>;
   defaultStroke: string;
+  setCamera: React.Dispatch<React.SetStateAction<Camera>>;
+  forcePan: boolean;
 }) {
   const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
     null,
@@ -45,8 +52,9 @@ export function useCanvas({
   const [isDragging, setIsDragging] = useState(false);
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
+  const isPanning = useRef(false);
 
-  const tool = tools[currentTool];
+  const tool = tools[forcePan ? "pan" : currentTool];
 
   //   const generateId = () => `${Date.now()}-${Math.random()}`;
   const generateId = () => Date.now().toString();
@@ -66,6 +74,8 @@ export function useCanvas({
     dragStartSnapshot,
     generateId,
     defaultStroke,
+    isPanning,
+    setCamera,
   };
 
   const onMouseDown = (x: number, y: number) => {

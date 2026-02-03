@@ -1,10 +1,17 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { useTheme } from "../../hooks/useTheme";
 import { TOOLS } from "./tools.config";
 import ToolButton from "./ToolButton";
+import type { ToolType } from "../../canvas/types";
 
-export default function Toolbar() {
-  const [active, setActive] = useState("rect");
+export default function Toolbar({
+  currentTool,
+  setCurrentTool,
+}: {
+  currentTool: ToolType;
+  setCurrentTool: React.Dispatch<React.SetStateAction<ToolType>>;
+}) {
+  // const [active, setActive] = useState<ToolType>("rect");
   const { colors } = useTheme();
 
   return (
@@ -14,7 +21,7 @@ export default function Toolbar() {
     >
       <div className="flex gap-1">
         {TOOLS.map((tool) => (
-          <ToolButton tool={tool} active={active} setActive={setActive} />
+          <ToolButton tool={tool} active={currentTool} setActive={setCurrentTool} />
         ))}
       </div>
     </div>

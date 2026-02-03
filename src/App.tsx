@@ -12,6 +12,7 @@ import Toolbar from "./components/toolbar/Toolbar";
 export default function App() {
   // global editor state
   const [currentTool, setCurrentTool] = useState<ToolType>("rect");
+  const [forcePan, setForcePan] = useState(false);
 
   // engine hooks
   const history = useHistory();
@@ -25,10 +26,12 @@ export default function App() {
     preview: history.preview,
     setHistory: history.setHistory,
     defaultStroke: theme.colors.defaultStroke,
+    setCamera: camera.setCamera,
+    forcePan,
   });
 
   // keyboard shortcuts
-  useKeyboard(setCurrentTool, history.undo, history.redo);
+  useKeyboard(setCurrentTool, history.undo, history.redo, setForcePan);
 
   return (
     <>
@@ -36,20 +39,19 @@ export default function App() {
       <CanvasStage
         elements={history.elements}
         currentElement={canvas.currentElement}
+        currentTool={currentTool}
         onMouseDown={canvas.onMouseDown}
         onMouseMove={canvas.onMouseMove}
         onMouseUp={canvas.onMouseUp}
         camera={camera.camera}
-        startPan={camera.startPan}
-        pan={camera.pan}
-        endPan={camera.endPan}
         zoomAt={camera.zoomAt}
         canvasBg={theme.colors.canvasBg}
+        forcePan={forcePan}
       />
 
       {/* UI LAYER */}
       <ThemeToggle mode={theme.mode} toggleTheme={theme.toggleTheme} />
-      <Toolbar />
+      <Toolbar currentTool={currentTool} setCurrentTool={setCurrentTool} />
     </>
   );
 }

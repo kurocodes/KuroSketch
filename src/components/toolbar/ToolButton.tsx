@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useTheme } from "../../hooks/useTheme";
 import type { Tool } from "./tools.config";
 import type React from "react";
+import type { ToolType } from "../../canvas/types";
 
 export default function ToolButton({
   tool,
@@ -9,8 +10,8 @@ export default function ToolButton({
   setActive,
 }: {
   tool: Tool;
-  active: string;
-  setActive: React.Dispatch<React.SetStateAction<string>>;
+  active: ToolType;
+  setActive: React.Dispatch<React.SetStateAction<ToolType>>;
 }) {
   const { colors } = useTheme();
 

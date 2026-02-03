@@ -9,9 +9,10 @@ import {
   LuCircle,
   LuEraser,
 } from "react-icons/lu";
+import type { ToolType } from "../../canvas/types";
 
 export type Tool = {
-  id: string;
+  id: ToolType;
   label: string;
   icon: IconType;
   shortcut: string;

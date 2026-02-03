@@ -1,6 +1,14 @@
 export type ElementType = "line" | "rect" | "circle" | "pencil" | "text";
 
-export type ToolType = "line" | "rect" | "circle" | "pencil" | "text" | "selection" | "eraser";
+export type ToolType =
+  | "line"
+  | "rect"
+  | "circle"
+  | "pencil"
+  | "text"
+  | "selection"
+  | "eraser"
+  | "pan";
 
 export interface Point {
   x: number;
@@ -27,5 +35,5 @@ export interface DrawingElement {
 export type HistoryState = {
   past: DrawingElement[][];
   present: DrawingElement[];
-  future: DrawingElement[][]
-}
+  future: DrawingElement[][];
+};

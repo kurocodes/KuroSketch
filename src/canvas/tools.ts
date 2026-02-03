@@ -1,5 +1,6 @@
 import type React from "react";
 import type { DrawingElement, HistoryState } from "./types";
+import type { Camera } from "./camera";
 
 export type ToolContext = {
   elements: DrawingElement[];
@@ -22,6 +23,10 @@ export type ToolContext = {
   generateId: () => string;
 
   defaultStroke: string;
+
+  // pan helpers
+  isPanning: React.RefObject<boolean>;
+  setCamera: React.Dispatch<React.SetStateAction<Camera>>;
 };
 
 export type ToolHandler = {
