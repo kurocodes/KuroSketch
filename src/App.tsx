@@ -8,6 +8,9 @@ import { useKeyboard } from "./hooks/useKeyboard";
 import CanvasStage from "./components/canvas/CanvasStage";
 import ThemeToggle from "./components/controls/ThemeToggle";
 import Toolbar from "./components/toolbar/Toolbar";
+import ZoomControls from "./components/controls/ZoomControls";
+import HistoryControls from "./components/controls/HistoryControls";
+import HelpButton from "./components/overlays/HelpButton";
 
 export default function App() {
   // global editor state
@@ -30,6 +33,16 @@ export default function App() {
     forcePan,
   });
 
+  const zoomAtCenter = (delta: number) => {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    camera.zoomAt(delta, centerX, centerY);
+  };
+
+  // const resetZoom = () => {
+  //   camera.setCamera((c) => ({ ...c, zoom: 1 }));
+  // };
+
   // keyboard shortcuts
   useKeyboard(setCurrentTool, history.undo, history.redo, setForcePan);
 
@@ -51,7 +64,17 @@ export default function App() {
 
       {/* UI LAYER */}
       <ThemeToggle mode={theme.mode} toggleTheme={theme.toggleTheme} />
+      <div className="fixed bottom-2 left-2 flex items-start gap-2">
+        <ZoomControls
+          zoomIn={() => zoomAtCenter(-1)}
+          zoomOut={() => zoomAtCenter(1)}
+          // zoomPercent={camera.camera.zoom * 100}
+          // resetZoom={resetZoom}
+        />
+        <HistoryControls undo={history.undo} redo={history.redo} />
+      </div>
       <Toolbar currentTool={currentTool} setCurrentTool={setCurrentTool} />
+      <HelpButton />
     </>
   );
 }

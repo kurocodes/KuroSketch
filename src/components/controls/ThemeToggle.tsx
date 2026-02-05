@@ -19,10 +19,11 @@ export default function ThemeToggle({
       whileHover={{ backgroundColor: colors.uiBorder }}
       whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
-      className="fixed top-4 right-4 z-10 cursor-pointer border-2 rounded-2xl p-2"
+      className="fixed top-2 right-2 z-10 cursor-pointer border rounded-2xl p-2"
       style={{
         borderColor: colors.uiBorder,
         backgroundColor: colors.uiBg,
+        boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
       }}
     >
       <AnimatePresence mode="wait" initial={false}>

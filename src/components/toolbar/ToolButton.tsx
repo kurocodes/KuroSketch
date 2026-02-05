@@ -19,12 +19,13 @@ export default function ToolButton({
     <motion.div
       whileHover={{ backgroundColor: colors.uiBorder }}
       whileTap={{ scale: 0.95 }}
+      transition={{ backgroundColor: { duration: 0 } }}
       onClick={() => setActive(tool.id)}
-      className="relative p-1 rounded-xl"
-      // style={{ borderColor: colors.uiBorder }}
+      className="relative p-2 rounded-xl cursor-pointer"
+      style={{ borderColor: colors.uiBorder }}
     >
       <tool.icon
-        size={36}
+        size={24}
         className="relative z-10"
         style={{
           color: active === tool.id ? colors.uiBg : colors.uiText,

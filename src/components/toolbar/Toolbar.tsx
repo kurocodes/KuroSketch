@@ -16,12 +16,21 @@ export default function Toolbar({
 
   return (
     <div
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 border-3 rounded-t-2xl p-1"
-      style={{ borderColor: colors.uiBorder, backgroundColor: colors.uiBg }}
+      className="fixed top-0 left-1/2 -translate-x-1/2 border border-t-0 rounded-b-2xl p-1"
+      style={{
+        borderColor: colors.uiBorder,
+        backgroundColor: colors.uiBg,
+        boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+      }}
     >
-      <div className="flex gap-1">
+      <div className="flex gap-0.5">
         {TOOLS.map((tool) => (
-          <ToolButton tool={tool} active={currentTool} setActive={setCurrentTool} />
+          <ToolButton
+            key={tool.id}
+            tool={tool}
+            active={currentTool}
+            setActive={setCurrentTool}
+          />
         ))}
       </div>
     </div>

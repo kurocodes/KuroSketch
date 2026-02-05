@@ -88,29 +88,27 @@ export default function CanvasStage({
         cursor: spacePressed ? "grab" : "crosshair",
       }}
       onMouseDown={(e) => {
-  const { x, y } = getScreenPos(e);
+        const { x, y } = getScreenPos(e);
 
-  if (forcePan || currentTool === "pan") {
-    onMouseDown(x, y); // screen space
-    return;
-  }
+        if (forcePan || currentTool === "pan") {
+          onMouseDown(x, y); // screen space
+          return;
+        }
 
-  const world = screenToWorld(x, y, camera);
-  onMouseDown(world.x, world.y);
-}}
-
+        const world = screenToWorld(x, y, camera);
+        onMouseDown(world.x, world.y);
+      }}
       onMouseMove={(e) => {
-  const { x, y } = getScreenPos(e);
+        const { x, y } = getScreenPos(e);
 
-  if ((forcePan || currentTool === "pan") && e.buttons === 1) {
-    onMouseMove(x, y); // screen space
-    return;
-  }
+        if ((forcePan || currentTool === "pan") && e.buttons === 1) {
+          onMouseMove(x, y); // screen space
+          return;
+        }
 
-  const world = screenToWorld(x, y, camera);
-  onMouseMove(world.x, world.y);
-}}
-
+        const world = screenToWorld(x, y, camera);
+        onMouseMove(world.x, world.y);
+      }}
       onMouseUp={() => {
         onMouseUp();
       }}
