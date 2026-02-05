@@ -6,20 +6,23 @@ export function useKeyboard(
   undo: () => void,
   redo: () => void,
   setForcePan: React.Dispatch<React.SetStateAction<boolean>>,
+  isTextEditing: boolean,
 ) {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      if (isTextEditing) return;
+
       if (e.code === "Space") {
         e.preventDefault();
         setForcePan(true);
       }
-      // if (e.key === "l") setTool("line");
-      // if (e.key === "r") setTool("rect");
-      // if (e.key === "c") setTool("circle");
-      // if (e.key === "p") setTool("pencil");
-      // if (e.key === "t") setTool("text");
-      // if (e.key === "s") setTool("selection");
-      // if (e.key === "e") setTool("eraser");
+      if (e.key === "l") setTool("line");
+      if (e.key === "r") setTool("rect");
+      if (e.key === "c") setTool("circle");
+      if (e.key === "p") setTool("pencil");
+      if (e.key === "t") setTool("text");
+      if (e.key === "s") setTool("selection");
+      if (e.key === "e") setTool("eraser");
 
       if (e.ctrlKey && e.key === "z") {
         e.preventDefault();
@@ -44,5 +47,5 @@ export function useKeyboard(
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
-  }, []);
+  }, [isTextEditing, undo, redo, setForcePan, setTool]);
 }

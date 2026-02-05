@@ -22,6 +22,7 @@ export default function App() {
   const [textEditor, setTextEditor] = useState<{ x: number; y: number } | null>(
     null,
   );
+  const isTextEditing = textEditor !== null;
 
   // engine hooks
   const history = useHistory();
@@ -51,7 +52,7 @@ export default function App() {
   // };
 
   // keyboard shortcuts
-  useKeyboard(setCurrentTool, history.undo, history.redo, setForcePan);
+  useKeyboard(setCurrentTool, history.undo, history.redo, setForcePan, isTextEditing);
 
   return (
     <>
