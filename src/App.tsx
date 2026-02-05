@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence } from "motion/react";
 import type { ToolType } from "./canvas/types";
 import useHistory from "./hooks/useHistory";
 import { useCamera } from "./hooks/useCamera";
@@ -13,6 +14,7 @@ import HistoryControls from "./components/controls/HistoryControls";
 import HelpButton from "./components/overlays/HelpButton";
 import TextEditor from "./components/overlays/TextEditor";
 import { screenToWorld } from "./canvas/camera";
+import InfoModal from "./components/overlays/InfoModal";
 
 export default function App() {
   // global editor state
@@ -23,6 +25,7 @@ export default function App() {
     null,
   );
   const isTextEditing = textEditor !== null;
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // engine hooks
   const history = useHistory();
@@ -52,7 +55,13 @@ export default function App() {
   // };
 
   // keyboard shortcuts
-  useKeyboard(setCurrentTool, history.undo, history.redo, setForcePan, isTextEditing);
+  useKeyboard(
+    setCurrentTool,
+    history.undo,
+    history.redo,
+    setForcePan,
+    isTextEditing,
+  );
 
   return (
     <>
@@ -68,6 +77,7 @@ export default function App() {
         zoomAt={camera.zoomAt}
         canvasBg={theme.colors.canvasBg}
         forcePan={forcePan}
+        toolCursor={canvas.ToolCursor}
       />
 
       {textEditor && (
@@ -112,7 +122,10 @@ export default function App() {
         <HistoryControls undo={history.undo} redo={history.redo} />
       </div>
       <Toolbar currentTool={currentTool} setCurrentTool={setCurrentTool} />
-      <HelpButton />
+      <AnimatePresence>
+        <InfoModal open={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
+      </AnimatePresence>
+      <HelpButton onClick={() => setIsInfoOpen(true)} />
     </>
   );
 }

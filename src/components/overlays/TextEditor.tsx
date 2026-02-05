@@ -31,7 +31,7 @@ export default function TextEditor({
         left: x,
         zIndex: 100,
         font: "16px sans-serif",
-        padding: 4,
+        // padding: 4,
         background: "transparent",
         border: "1px dashed #888",
         outline: "none",

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, type CSSProperties } from "react";
 import { screenToWorld, type Camera } from "../../canvas/camera";
 import type { DrawingElement, ToolType } from "../../canvas/types";
 import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
-import { useKeyState } from "../../hooks/useKeyState";
+// import { useKeyState } from "../../hooks/useKeyState";
 import { drawElement } from "../../canvas/renderer";
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
   zoomAt: (delta: number, x: number, y: number) => void;
   canvasBg: string;
   forcePan: boolean;
+  toolCursor: { [key in ToolType]: CSSProperties["cursor"] }
 };
 
 export default function CanvasStage({
@@ -30,11 +31,12 @@ export default function CanvasStage({
   zoomAt,
   canvasBg,
   forcePan,
+  toolCursor
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const roughRef = useRef<RoughCanvas | null>(null);
 
-  const spacePressed = useKeyState(" ");
+  // const spacePressed = useKeyState(" ");
 
   // setup (runs once)
   useEffect(() => {
@@ -85,7 +87,7 @@ export default function CanvasStage({
         height: "100vh",
         display: "block",
         backgroundColor: canvasBg,
-        cursor: spacePressed ? "grab" : "crosshair",
+        cursor: toolCursor[currentTool],
       }}
       onMouseDown={(e) => {
         if (currentTool === "text") {

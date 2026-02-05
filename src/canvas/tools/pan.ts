@@ -2,12 +2,13 @@ import type { ToolHandler } from "../tools";
 
 export const panTool: ToolHandler = {
     onMouseDown(x, y, ctx) {
-        ctx.isPanning.current = true;
+        ctx.isPanningRef.current = true;
+        ctx.setIsPanning(true);
         ctx.lastMousePos.current = { x, y };
     },
 
     onMouseMove(x, y, ctx) {
-        if (!ctx.isPanning.current || !ctx.lastMousePos.current) return;
+        if (!ctx.isPanningRef.current || !ctx.lastMousePos.current) return;
 
         const dx = x - ctx.lastMousePos.current.x;
         const dy = y - ctx.lastMousePos.current.y;
@@ -22,7 +23,8 @@ export const panTool: ToolHandler = {
     },
 
     onMouseUp(ctx) {
-        ctx.isPanning.current = false;
+        ctx.isPanningRef.current = false;
+        ctx.setIsPanning(false);
         ctx.lastMousePos.current = null;
     },
 }

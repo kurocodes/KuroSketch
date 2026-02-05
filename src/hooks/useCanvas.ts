@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, type CSSProperties } from "react";
 import {
   type DrawingElement,
   type HistoryState,
@@ -54,9 +54,12 @@ export function useCanvas({
   const [isDragging, setIsDragging] = useState(false);
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   const dragStartSnapshot = useRef<DrawingElement[] | null>(null);
-  const isPanning = useRef(false);
+  const isPanningRef = useRef(false);
+  const [isPanning, setIsPanning] = useState(false);
 
   const tool = tools[forcePan ? "pan" : currentTool];
+
+  const panCursor = isPanning ? "grabbing" : "grab";
 
   //   const generateId = () => `${Date.now()}-${Math.random()}`;
   const generateId = () => Date.now().toString();
@@ -76,7 +79,8 @@ export function useCanvas({
     dragStartSnapshot,
     generateId,
     defaultStroke,
-    isPanning,
+    isPanningRef,
+    setIsPanning,
     setCamera,
     startTextEditing,
   };
@@ -93,5 +97,16 @@ export function useCanvas({
     tool?.onMouseUp?.(ctx);
   };
 
-  return { currentElement, onMouseDown, onMouseMove, onMouseUp };
+  const ToolCursor: { [key in ToolType]: CSSProperties["cursor"] } = {
+    line: "crosshair",
+    rect: "crosshair",
+    circle: "crosshair",
+    pencil: "crosshair",
+    text: "text",
+    selection: "move",
+    eraser: "crosshair",
+    pan: panCursor,
+  };
+
+  return { currentElement, onMouseDown, onMouseMove, onMouseUp, ToolCursor };
 }

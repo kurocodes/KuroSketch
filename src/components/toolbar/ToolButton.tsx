@@ -3,15 +3,24 @@ import { useTheme } from "../../hooks/useTheme";
 import type { Tool } from "./tools.config";
 import type React from "react";
 import type { ToolType } from "../../canvas/types";
+import Label from "../label/Label";
 
 export default function ToolButton({
   tool,
   active,
   setActive,
+  showLabel,
+  onHoverStart,
+  onHoverEnd,
+  animateLabelOnMount,
 }: {
   tool: Tool;
   active: ToolType;
   setActive: React.Dispatch<React.SetStateAction<ToolType>>;
+  showLabel: boolean;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
+  animateLabelOnMount: boolean;
 }) {
   const { colors } = useTheme();
 
@@ -21,6 +30,10 @@ export default function ToolButton({
       whileTap={{ scale: 0.95 }}
       transition={{ backgroundColor: { duration: 0 } }}
       onClick={() => setActive(tool.id)}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+      onFocus={onHoverStart}
+      onBlur={onHoverEnd}
       className="relative p-2 rounded-xl cursor-pointer"
       style={{ borderColor: colors.uiBorder }}
     >
@@ -32,6 +45,16 @@ export default function ToolButton({
           transition: "color 0.2s ease-in-out",
         }}
       />
+      {showLabel && (
+        <Label
+          tooltipPosition="bottom"
+          layoutId="toolbar-tooltip"
+          animateOnMount={animateLabelOnMount}
+        >
+          {tool.label}
+          {tool.shortcut ? ` (${tool.shortcut})` : ""}
+        </Label>
+      )}
       {active === tool.id && (
         <motion.div
           layoutId="activeTool"

@@ -25,7 +25,8 @@ export type ToolContext = {
   defaultStroke: string;
 
   // pan helpers
-  isPanning: React.RefObject<boolean>;
+  isPanningRef: React.RefObject<boolean>;
+  setIsPanning: (v: boolean) => void;
   setCamera: React.Dispatch<React.SetStateAction<Camera>>;
 
   // text helper
