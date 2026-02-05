@@ -1,73 +1,112 @@
-# React + TypeScript + Vite
+# 🎨 KuroSketch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimal sketching app built from scratch… <br />
+not to copy tools like Excalidraw — <br />
+but to understand how they actually work.
 
-Currently, two official plugins are available:
+Lines, shapes, text, undo/redo, pan, zoom… <br />
+all handcrafted with Canvas + logic + a lot of learning moments 💭
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is less about being “feature-heavy” <br />
+and more about building a real drawing engine, step by step.
 
-## React Compiler
+## 🧠 Why KuroSketch?
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Most sketch apps hide the hard parts.
 
-## Expanding the ESLint configuration
+KuroSketch does the opposite.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Mouse input → geometry → canvas rendering → state history <br />
+no magic… just fundamentals.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+If you like learning by building, <br />
+this one’s for you.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠️ Technologies Used
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- React
+- TypeScript
+- Vite
+- HTML Canvas API
+- Rough.js (for that hand-drawn feel ✍️)
+- Tailwind CSS (UI polish & theming)
+- Motion (for a little bit UI animations)
+
+Simple stack.
+Deep learning.
+
+## ✨ Features
+
+- ✏️ Freehand pencil tool
+- 📏 Line tool
+- ⬛ Rectangle & ⚪ Circle tools
+- 🔤 Text tool
+- 🖱️ Select & move elements
+- 🧽 Eraser
+- ↩️ Undo / Redo system
+- 🤏 Pan & Zoom canvas
+- 🌗 Light / Dark theme toggle
+- ⌨️ Keyboard shortcuts
+
+Everything rendered manually on canvas… <br />
+no SVG shortcuts 👀
+
+## 🧩 Development Process
+
+This project followed a build-and-learn approach:
+
+Setup → Canvas rendering → Element models → Tools → History system → Pan & zoom → UI <br />
+Then… polish ✨
+
+Each feature was added only after understanding <br />
+why it should exist and how it works internally.
+
+No rushing.
+No skipping fundamentals.
+
+## 🧠 What I Learned
+
+- How canvas rendering actually works (and why redraws matter)
+- Managing complex mouse interactions without losing sanity
+- Geometry basics (hit detection is sneaky…)
+- Designing a clean undo/redo history system
+- Separating tools, elements, and state
+- Debugging weird coordinate bugs caused by pan & zoom 😵‍💫
+
+Most importantly… <br />
+Building from scratch teaches you things tutorials never mention.
+
+## 🚀 What’s Next? (Ideas for Improvement)
+
+This is where KuroSketch can grow 👀
+
+Some ideas:
+
+- 🧲 Multi-select & group elements
+- 🎯 Better hit detection & resizing handles
+- 🖼️ Export as PNG / SVG
+- 💾 Save & load sketches
+- 🧩 More shapes (arrows, diamonds, etc.)
+- 🖌️ Stroke & color customization
+- 📱 Touch / mobile support
+
+KuroSketch is a solid base. <br />
+From here… it can evolve into something really powerful.
+
+## ▶️ Running the Project
+
+```
+# clone the repo
+git clone https://github.com/your-username/kurosketch.git
+
+# install dependencies
+npm install
+
+# start dev server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open `http://localhost:5173`
+and start sketching ✨
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🎥 Video Preview
