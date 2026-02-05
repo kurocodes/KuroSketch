@@ -88,10 +88,19 @@ export default function CanvasStage({
         cursor: spacePressed ? "grab" : "crosshair",
       }}
       onMouseDown={(e) => {
+        if (currentTool === "text") {
+          e.preventDefault(); // 🔥 IMPORTANT
+        }
+
         const { x, y } = getScreenPos(e);
 
         if (forcePan || currentTool === "pan") {
-          onMouseDown(x, y); // screen space
+          onMouseDown(x, y);
+          return;
+        }
+
+        if (currentTool === "text") {
+          onMouseDown(x, y);
           return;
         }
 
@@ -113,7 +122,7 @@ export default function CanvasStage({
         onMouseUp();
       }}
       onWheel={(e) => {
-        e.preventDefault();
+        // e.preventDefault();
         const { x, y } = getScreenPos(e);
         zoomAt(e.deltaY, x, y);
       }}

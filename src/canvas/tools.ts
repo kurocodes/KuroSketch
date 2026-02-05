@@ -27,6 +27,9 @@ export type ToolContext = {
   // pan helpers
   isPanning: React.RefObject<boolean>;
   setCamera: React.Dispatch<React.SetStateAction<Camera>>;
+
+  // text helper
+  startTextEditing?: (x: number, y: number) => void;
 };
 
 export type ToolHandler = {

@@ -11,11 +11,17 @@ import Toolbar from "./components/toolbar/Toolbar";
 import ZoomControls from "./components/controls/ZoomControls";
 import HistoryControls from "./components/controls/HistoryControls";
 import HelpButton from "./components/overlays/HelpButton";
+import TextEditor from "./components/overlays/TextEditor";
+import { screenToWorld } from "./canvas/camera";
 
 export default function App() {
   // global editor state
   const [currentTool, setCurrentTool] = useState<ToolType>("rect");
   const [forcePan, setForcePan] = useState(false);
+
+  const [textEditor, setTextEditor] = useState<{ x: number; y: number } | null>(
+    null,
+  );
 
   // engine hooks
   const history = useHistory();
@@ -31,6 +37,7 @@ export default function App() {
     defaultStroke: theme.colors.defaultStroke,
     setCamera: camera.setCamera,
     forcePan,
+    startTextEditing: (x, y) => setTextEditor({ x, y }),
   });
 
   const zoomAtCenter = (delta: number) => {
@@ -61,6 +68,36 @@ export default function App() {
         canvasBg={theme.colors.canvasBg}
         forcePan={forcePan}
       />
+
+      {textEditor && (
+        <TextEditor
+          x={textEditor.x}
+          y={textEditor.y}
+          onCancel={() => setTextEditor(null)}
+          onSubmit={(text) => {
+            const world = screenToWorld(
+              textEditor.x,
+              textEditor.y,
+              camera.camera,
+            );
+            history.commit([
+              ...history.elements,
+              {
+                id: Date.now().toString(),
+                type: "text",
+                x1: world.x,
+                y1: world.y,
+                x2: world.x,
+                y2: world.y,
+                text,
+                stroke: theme.colors.defaultStroke,
+              },
+            ]);
+
+            setTextEditor(null);
+          }}
+        />
+      )}
 
       {/* UI LAYER */}
       <ThemeToggle mode={theme.mode} toggleTheme={theme.toggleTheme} />

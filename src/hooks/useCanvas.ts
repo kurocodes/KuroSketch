@@ -33,6 +33,7 @@ export function useCanvas({
   defaultStroke,
   setCamera,
   forcePan,
+  startTextEditing,
 }: {
   elements: DrawingElement[];
   currentTool: ToolType;
@@ -42,6 +43,7 @@ export function useCanvas({
   defaultStroke: string;
   setCamera: React.Dispatch<React.SetStateAction<Camera>>;
   forcePan: boolean;
+  startTextEditing?: (x: number, y: number) => void;
 }) {
   const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
     null,
@@ -76,6 +78,7 @@ export function useCanvas({
     defaultStroke,
     isPanning,
     setCamera,
+    startTextEditing,
   };
 
   const onMouseDown = (x: number, y: number) => {
