@@ -1,3 +1,5 @@
+import type { Drawable } from "roughjs/bin/core";
+
 export type ElementType = "line" | "rect" | "circle" | "pencil" | "text";
 
 export type ToolType =
@@ -30,6 +32,8 @@ export interface DrawingElement {
 
   points?: Point[]; // pencil
   text?: string;
+
+  roughElement?: Drawable;
 }
 
 export type HistoryState = {

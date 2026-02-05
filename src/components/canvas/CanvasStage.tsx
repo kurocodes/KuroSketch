@@ -5,6 +5,7 @@ import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
 // import { useKeyState } from "../../hooks/useKeyState";
 import { drawElement } from "../../canvas/renderer";
+import type { RoughGenerator } from "roughjs/bin/generator";
 
 type Props = {
   elements: DrawingElement[];
@@ -17,7 +18,8 @@ type Props = {
   zoomAt: (delta: number, x: number, y: number) => void;
   canvasBg: string;
   forcePan: boolean;
-  toolCursor: { [key in ToolType]: CSSProperties["cursor"] }
+  toolCursor: { [key in ToolType]: CSSProperties["cursor"] };
+  setRoughGenerator: (generator: RoughGenerator) => void;
 };
 
 export default function CanvasStage({
@@ -31,10 +33,12 @@ export default function CanvasStage({
   zoomAt,
   canvasBg,
   forcePan,
-  toolCursor
+  toolCursor,
+  setRoughGenerator,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const roughRef = useRef<RoughCanvas | null>(null);
+  const generatorRef = useRef<RoughGenerator | null>(null);
 
   // const spacePressed = useKeyState(" ");
 
@@ -47,6 +51,7 @@ export default function CanvasStage({
     canvas.height = window.innerHeight;
 
     roughRef.current = rough.canvas(canvas);
+    generatorRef.current = rough.generator();
   }, []);
 
   // render (runs every frame)
@@ -65,10 +70,16 @@ export default function CanvasStage({
     ctx.scale(camera.zoom, camera.zoom);
 
     elements.forEach((el) => drawElement(el, rc, ctx));
-    if (currentElement) drawElement(currentElement, rc, ctx);
+    if (currentElement) drawElement(currentElement, rc, ctx, true);
 
     ctx.restore();
   }, [elements, currentElement, camera]);
+
+  useEffect(() => {
+    if (generatorRef.current) {
+      setRoughGenerator(generatorRef.current);
+    }
+  }, []);
 
   // mouse handlers
   const getScreenPos = (e: React.MouseEvent) => {

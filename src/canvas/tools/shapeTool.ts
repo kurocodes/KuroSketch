@@ -30,9 +30,42 @@ export function createShapeTool(type: ElementType): ToolHandler {
     },
 
     onMouseUp(ctx) {
-      if (!ctx.currentElement) return;
+      if (!ctx.currentElement || !ctx.roughGenerator) return;
 
-      ctx.commit([...ctx.elements, ctx.currentElement]);
+      const el = ctx.currentElement;
+      const g = ctx.roughGenerator;
+
+      switch (type) {
+        case "line":
+          el.roughElement = g.line(el.x1, el.y1, el.x2, el.y2, {
+            stroke: el.stroke,
+          });
+          break;
+
+        case "rect":
+          el.roughElement = g.rectangle(
+            Math.min(el.x1, el.x2),
+            Math.min(el.y1, el.y2),
+            Math.abs(el.x2 - el.x1),
+            Math.abs(el.y2 - el.y1),
+            { stroke: el.stroke },
+          );
+          break;
+
+        case "circle": {
+          const diameter = Math.max(
+            Math.abs(el.x2 - el.x1),
+            Math.abs(el.y2 - el.y1),
+          );
+
+          el.roughElement = g.circle(el.x1, el.y1, diameter, {
+            stroke: el.stroke,
+          });
+          break;
+        }
+      }
+
+      ctx.commit([...ctx.elements, el]);
       ctx.setCurrentElement(null);
     },
   };

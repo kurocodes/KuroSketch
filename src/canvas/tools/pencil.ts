@@ -35,6 +35,15 @@ export const pencilTool: ToolHandler = {
   onMouseUp(ctx) {
     if (!ctx.currentElement) return;
 
+    const el = ctx.currentElement;
+
+    if (!el.points) return;
+
+    el.roughElement = ctx.roughGenerator?.linearPath(
+      el.points.map((p) => [p.x, p.y]),
+      { stroke: el.stroke || "#000" },
+    );
+
     ctx.commit([...ctx.elements, ctx.currentElement]);
     ctx.setCurrentElement(null);
   },

@@ -15,6 +15,7 @@ import HelpButton from "./components/overlays/HelpButton";
 import TextEditor from "./components/overlays/TextEditor";
 import { screenToWorld } from "./canvas/camera";
 import InfoModal from "./components/overlays/InfoModal";
+import type { RoughGenerator } from "roughjs/bin/generator";
 
 export default function App() {
   // global editor state
@@ -26,6 +27,7 @@ export default function App() {
   );
   const isTextEditing = textEditor !== null;
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [roughGenerator, setRoughGenerator] = useState<RoughGenerator | null>(null);
 
   // engine hooks
   const history = useHistory();
@@ -42,6 +44,7 @@ export default function App() {
     setCamera: camera.setCamera,
     forcePan,
     startTextEditing: (x, y) => setTextEditor({ x, y }),
+    roughGenerator,
   });
 
   const zoomAtCenter = (delta: number) => {
@@ -78,6 +81,7 @@ export default function App() {
         canvasBg={theme.colors.canvasBg}
         forcePan={forcePan}
         toolCursor={canvas.ToolCursor}
+        setRoughGenerator={setRoughGenerator}
       />
 
       {textEditor && (

@@ -1,6 +1,7 @@
 import type React from "react";
 import type { DrawingElement, HistoryState } from "./types";
 import type { Camera } from "./camera";
+import type { RoughGenerator } from "roughjs/bin/generator";
 
 export type ToolContext = {
   elements: DrawingElement[];
@@ -31,6 +32,8 @@ export type ToolContext = {
 
   // text helper
   startTextEditing?: (x: number, y: number) => void;
+
+  roughGenerator?: RoughGenerator | null;
 };
 
 export type ToolHandler = {

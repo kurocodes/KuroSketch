@@ -12,6 +12,7 @@ import { textTool } from "../canvas/tools/text";
 import { eraserTool } from "../canvas/tools/eraser";
 import { panTool } from "../canvas/tools/pan";
 import type { Camera } from "../canvas/camera";
+import type { RoughGenerator } from "roughjs/bin/generator";
 
 const tools: Record<ToolType, ToolHandler | undefined> = {
   selection: selectionTool,
@@ -34,6 +35,7 @@ export function useCanvas({
   setCamera,
   forcePan,
   startTextEditing,
+  roughGenerator,
 }: {
   elements: DrawingElement[];
   currentTool: ToolType;
@@ -44,6 +46,7 @@ export function useCanvas({
   setCamera: React.Dispatch<React.SetStateAction<Camera>>;
   forcePan: boolean;
   startTextEditing?: (x: number, y: number) => void;
+  roughGenerator?: RoughGenerator | null;
 }) {
   const [currentElement, setCurrentElement] = useState<DrawingElement | null>(
     null,
@@ -83,6 +86,7 @@ export function useCanvas({
     setIsPanning,
     setCamera,
     startTextEditing,
+    roughGenerator,
   };
 
   const onMouseDown = (x: number, y: number) => {
