@@ -70,7 +70,7 @@ export default function CanvasStage({
     ctx.scale(camera.zoom, camera.zoom);
 
     elements.forEach((el) => drawElement(el, rc, ctx));
-    if (currentElement) drawElement(currentElement, rc, ctx, true);
+    if (currentElement) drawElement(currentElement, rc, ctx);
 
     ctx.restore();
   }, [elements, currentElement, camera]);
