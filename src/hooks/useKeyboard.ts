@@ -16,12 +16,12 @@ export function useKeyboard(
         e.preventDefault();
         setForcePan(true);
       }
-      if (e.key === "l") setTool("line");
-      if (e.key === "r") setTool("rect");
-      if (e.key === "c") setTool("circle");
-      if (e.key === "p") setTool("pencil");
-      if (e.key === "t") setTool("text");
-      if (e.key === "s") setTool("selection");
+      if (e.key === "1") setTool("selection");
+      if (e.key === "2") setTool("rect");
+      if (e.key === "3") setTool("ellipse");
+      if (e.key === "4") setTool("line");
+      if (e.key === "5") setTool("pencil");
+      if (e.key === "6") setTool("text");
       if (e.key === "e") setTool("eraser");
 
       if (e.ctrlKey && e.key === "z") {

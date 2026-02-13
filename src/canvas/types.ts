@@ -1,11 +1,11 @@
 import type { Drawable } from "roughjs/bin/core";
 
-export type ElementType = "line" | "rect" | "circle" | "pencil" | "text";
+export type ElementType = "line" | "rect" | "ellipse" | "pencil" | "text";
 
 export type ToolType =
   | "line"
   | "rect"
-  | "circle"
+  | "ellipse"
   | "pencil"
   | "text"
   | "selection"

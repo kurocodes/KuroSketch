@@ -39,14 +39,19 @@ export function drawElement(
       );
       break;
 
-    case "circle": {
-      const d = Math.max(
-        Math.abs(element.x2 - element.x1),
-        Math.abs(element.y2 - element.y1),
-      );
-      rc.circle(element.x1, element.y1, d, {
+    case "ellipse": {
+      const minX = Math.min(element.x1, element.x2);
+      const minY = Math.min(element.y1, element.y2);
+      const width = Math.abs(element.x2 - element.x1);
+      const height = Math.abs(element.y2 - element.y1);
+
+      const centerX = minX + width / 2;
+      const centerY = minY + height / 2;
+
+      rc.ellipse(centerX, centerY, width, height, {
         stroke: element.stroke,
       });
+
       break;
     }
 

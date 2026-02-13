@@ -92,7 +92,7 @@ export function getElementBounds(el: DrawingElement) {
   switch (el.type) {
     case "line":
     case "rect":
-    case "circle":
+    case "ellipse":
       return {
         minX: Math.min(el.x1, el.x2),
         minY: Math.min(el.y1, el.y2),

@@ -52,15 +52,19 @@ export function createShapeTool(type: ElementType): ToolHandler {
           );
           break;
 
-        case "circle": {
-          const diameter = Math.max(
-            Math.abs(el.x2 - el.x1),
-            Math.abs(el.y2 - el.y1),
-          );
+        case "ellipse": {
+          const minX = Math.min(el.x1, el.x2);
+          const minY = Math.min(el.y1, el.y2);
+          const width = Math.abs(el.x2 - el.x1);
+          const height = Math.abs(el.y2 - el.y1);
 
-          el.roughElement = g.circle(el.x1, el.y1, diameter, {
+          const centerX = minX + width / 2;
+          const centerY = minY + height / 2;
+
+          el.roughElement = g.ellipse(centerX, centerY, width, height, {
             stroke: el.stroke,
           });
+
           break;
         }
       }
@@ -73,4 +77,4 @@ export function createShapeTool(type: ElementType): ToolHandler {
 
 export const lineTool = createShapeTool("line");
 export const rectTool = createShapeTool("rect");
-export const circleTool = createShapeTool("circle");
+export const ellipseTool = createShapeTool("ellipse");

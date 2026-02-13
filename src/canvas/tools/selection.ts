@@ -64,7 +64,7 @@ export const selectionTool: ToolHandler = {
             ),
           };
 
-        case "circle": {
+        case "ellipse": {
           const d = Math.max(Math.abs(el.x2 - el.x1), Math.abs(el.y2 - el.y1));
           return {
             ...el,

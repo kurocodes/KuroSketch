@@ -49,10 +49,16 @@ export default function ZoomControls({
     }, 350);
   };
 
-  const hideTooltip = () => {
+  const hideTooltip = (immediate = false) => {
     if (hoverTimeout.current !== null) {
       window.clearTimeout(hoverTimeout.current);
     }
+
+    if (immediate) {
+      setHoveredControl(null);
+      return;
+    }
+
     hoverTimeout.current = window.setTimeout(() => {
       setHoveredControl(null);
     }, 120);
@@ -68,7 +74,10 @@ export default function ZoomControls({
           Icon={LuZoomIn}
           className="rounded-l-[14px]"
           cursor="pointer"
-          onClick={zoomIn}
+          onClick={() => {
+            zoomIn();
+            hideTooltip(true);
+          }}
           label="Zoom In"
           tooltipPosition="top"
           tooltipLayoutId="zoom-tooltip"
@@ -93,7 +102,10 @@ export default function ZoomControls({
           Icon={LuZoomOut}
           className="rounded-r-[14px]"
           cursor="pointer"
-          onClick={zoomOut}
+          onClick={() => {
+            zoomOut();
+            hideTooltip(true);
+          }}
           label="Zoom Out"
           tooltipPosition="top"
           tooltipLayoutId="zoom-tooltip"

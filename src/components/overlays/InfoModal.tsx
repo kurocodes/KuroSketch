@@ -74,7 +74,7 @@ export default function InfoModal({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 max-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -87,7 +87,7 @@ export default function InfoModal({
         initial={{ y: 8, scale: 0.98, opacity: 0 }}
         animate={{ y: 0, scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="w-full max-w-xl rounded-2xl border shadow-xl"
+        className="w-full max-w-xl rounded-2xl border shadow-xl h-full overflow-y-auto"
         style={{ backgroundColor: colors.uiBg, borderColor: colors.uiBorder }}
         onMouseDown={(e) => e.stopPropagation()}
       >

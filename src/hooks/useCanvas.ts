@@ -7,7 +7,7 @@ import {
 import type { ToolContext, ToolHandler } from "../canvas/tools";
 import { selectionTool } from "../canvas/tools/selection";
 import { pencilTool } from "../canvas/tools/pencil";
-import { circleTool, lineTool, rectTool } from "../canvas/tools/shapeTool";
+import { ellipseTool, lineTool, rectTool } from "../canvas/tools/shapeTool";
 import { textTool } from "../canvas/tools/text";
 import { eraserTool } from "../canvas/tools/eraser";
 import { panTool } from "../canvas/tools/pan";
@@ -19,7 +19,7 @@ const tools: Record<ToolType, ToolHandler | undefined> = {
   pencil: pencilTool,
   line: lineTool,
   rect: rectTool,
-  circle: circleTool,
+  ellipse: ellipseTool,
   text: textTool,
   eraser: eraserTool,
   pan: panTool,
@@ -104,7 +104,7 @@ export function useCanvas({
   const ToolCursor: { [key in ToolType]: CSSProperties["cursor"] } = {
     line: "crosshair",
     rect: "crosshair",
-    circle: "crosshair",
+    ellipse: "crosshair",
     pencil: "crosshair",
     text: "text",
     selection: "move",

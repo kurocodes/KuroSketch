@@ -42,10 +42,16 @@ export default function HistoryControls({ undo, redo }: HistoryControlsProps) {
     }, 350);
   };
 
-  const hideTooltip = () => {
+  const hideTooltip = (immediate = false) => {
     if (hoverTimeout.current !== null) {
       window.clearTimeout(hoverTimeout.current);
     }
+
+    if (immediate) {
+      setHoveredControl(null);
+      return;
+    }
+
     hoverTimeout.current = window.setTimeout(() => {
       setHoveredControl(null);
     }, 120);
@@ -60,7 +66,10 @@ export default function HistoryControls({ undo, redo }: HistoryControlsProps) {
         <ControlButton
           Icon={LuUndo2}
           className="rounded-l-[14px]"
-          onClick={undo}
+          onClick={() => {
+            undo();
+            hideTooltip(true);
+          }}
           label="Undo"
           tooltipPosition="top"
           tooltipLayoutId="history-tooltip"
@@ -76,7 +85,10 @@ export default function HistoryControls({ undo, redo }: HistoryControlsProps) {
         <ControlButton
           Icon={LuRedo2}
           className="rounded-r-[14px]"
-          onClick={redo}
+          onClick={() => {
+            redo();
+            hideTooltip(true);
+          }}
           label="Redo"
           tooltipPosition="top"
           tooltipLayoutId="history-tooltip"
