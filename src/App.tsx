@@ -69,9 +69,9 @@ export default function App() {
         elements={history.elements}
         currentElement={canvas.currentElement}
         currentTool={currentTool}
-        onMouseDown={canvas.onMouseDown}
-        onMouseMove={canvas.onMouseMove}
-        onMouseUp={canvas.onMouseUp}
+        onPointerDown={canvas.onPointerDown}
+        onPointerMove={canvas.onPointerMove}
+        onPointerUp={canvas.onPointerUp}
         camera={camera.camera}
         zoomAt={camera.zoomAt}
         canvasBg={theme.colors.canvasBg}

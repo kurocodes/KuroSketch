@@ -10,9 +10,9 @@ type Props = {
   elements: DrawingElement[];
   currentElement: DrawingElement | null;
   currentTool: ToolType;
-  onMouseDown: (x: number, y: number) => void;
-  onMouseMove: (x: number, y: number) => void;
-  onMouseUp: () => void;
+  onPointerDown: (x: number, y: number) => void;
+  onPointerMove: (x: number, y: number) => void;
+  onPointerUp: () => void;
   camera: Camera;
   zoomAt: (delta: number, x: number, y: number) => void;
   canvasBg: string;
@@ -25,9 +25,9 @@ export default function CanvasStage({
   elements,
   currentElement,
   currentTool,
-  onMouseDown,
-  onMouseMove,
-  onMouseUp,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
   camera,
   zoomAt,
   canvasBg,
@@ -110,17 +110,17 @@ export default function CanvasStage({
         const { x, y } = getScreenPos(e);
 
         if (forcePan || currentTool === "pan") {
-          onMouseDown(x, y);
+          onPointerDown(x, y);
           return;
         }
 
         if (currentTool === "text") {
-          onMouseDown(x, y);
+          onPointerDown(x, y);
           return;
         }
 
         const world = screenToWorld(x, y, camera);
-        onMouseDown(world.x, world.y);
+        onPointerDown(world.x, world.y);
       }}
 
       onPointerMove={(e) => {
@@ -128,18 +128,18 @@ export default function CanvasStage({
         const { x, y } = getScreenPos(e);
 
         if (forcePan || currentTool === "pan") {
-          onMouseMove(x, y); // screen space
+          onPointerMove(x, y); // screen space
           return;
         }
 
         const world = screenToWorld(x, y, camera);
-        onMouseMove(world.x, world.y);
+        onPointerMove(world.x, world.y);
       }}
 
       onPointerUp={(e) => {
         isPointerDown.current = false;
         e.currentTarget.releasePointerCapture(e.pointerId);
-        onMouseUp();
+        onPointerUp();
       }}
       onWheel={(e) => {
         // e.preventDefault();

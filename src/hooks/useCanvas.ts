@@ -89,16 +89,16 @@ export function useCanvas({
     roughGenerator,
   };
 
-  const onMouseDown = (x: number, y: number) => {
-    tool?.onMouseDown?.(x, y, ctx);
+  const onPointerDown = (x: number, y: number) => {
+    tool?.onPointerDown?.(x, y, ctx);
   };
 
-  const onMouseMove = (x: number, y: number) => {
-    tool?.onMouseMove?.(x, y, ctx);
+  const onPointerMove = (x: number, y: number) => {
+    tool?.onPointerMove?.(x, y, ctx);
   };
 
-  const onMouseUp = () => {
-    tool?.onMouseUp?.(ctx);
+  const onPointerUp = () => {
+    tool?.onPointerUp?.(ctx);
   };
 
   const ToolCursor: { [key in ToolType]: CSSProperties["cursor"] } = {
@@ -112,5 +112,5 @@ export function useCanvas({
     pan: panCursor,
   };
 
-  return { currentElement, onMouseDown, onMouseMove, onMouseUp, ToolCursor };
+  return { currentElement, onPointerDown, onPointerMove, onPointerUp, ToolCursor };
 }

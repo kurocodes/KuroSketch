@@ -37,7 +37,7 @@ export type ToolContext = {
 };
 
 export type ToolHandler = {
-  onMouseDown?: (x: number, y: number, ctx: ToolContext) => void;
-  onMouseMove?: (x: number, y: number, ctx: ToolContext) => void;
-  onMouseUp?: (ctx: ToolContext) => void;
+  onPointerDown?: (x: number, y: number, ctx: ToolContext) => void;
+  onPointerMove?: (x: number, y: number, ctx: ToolContext) => void;
+  onPointerUp?: (ctx: ToolContext) => void;
 };

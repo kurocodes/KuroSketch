@@ -3,7 +3,7 @@ import type { DrawingElement, ElementType } from "../types";
 
 export function createShapeTool(type: ElementType): ToolHandler {
   return {
-    onMouseDown(x, y, ctx) {
+    onPointerDown(x, y, ctx) {
       const element: DrawingElement = {
         id: ctx.generateId(),
         type,
@@ -18,7 +18,7 @@ export function createShapeTool(type: ElementType): ToolHandler {
       ctx.setCurrentElement(element);
     },
 
-    onMouseMove(x, y, ctx) {
+    onPointerMove(x, y, ctx) {
       ctx.setCurrentElement((prev) => {
         if (!prev || prev.type !== type || !ctx.roughGenerator) return prev;
 
@@ -75,7 +75,7 @@ export function createShapeTool(type: ElementType): ToolHandler {
       });
     },
 
-    onMouseUp(ctx) {
+    onPointerUp(ctx) {
       if (!ctx.currentElement || !ctx.roughGenerator) return;
 
       const el = ctx.currentElement;

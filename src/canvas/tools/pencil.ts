@@ -2,7 +2,7 @@ import type { ToolHandler } from "../tools";
 import type { DrawingElement } from "../types";
 
 export const pencilTool: ToolHandler = {
-  onMouseDown(x, y, ctx) {
+  onPointerDown(x, y, ctx) {
     const element: DrawingElement = {
       id: ctx.generateId(),
       type: "pencil",
@@ -19,7 +19,7 @@ export const pencilTool: ToolHandler = {
     // return;
   },
 
-  onMouseMove(x, y, ctx) {
+  onPointerMove(x, y, ctx) {
     ctx.setCurrentElement((prev) => {
       if (
         !prev ||
@@ -48,7 +48,7 @@ export const pencilTool: ToolHandler = {
     });
   },
 
-  onMouseUp(ctx) {
+  onPointerUp(ctx) {
     if (!ctx.currentElement) return;
 
     const el = ctx.currentElement;
