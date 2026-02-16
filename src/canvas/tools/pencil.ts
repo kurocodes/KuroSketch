@@ -12,6 +12,7 @@ export const pencilTool: ToolHandler = {
       y2: y,
       points: [{ x: x, y: y }],
       stroke: ctx.defaultStroke,
+      seed: Math.floor(Math.random() * 1000000),
     };
 
     ctx.setCurrentElement(element);
@@ -20,16 +21,31 @@ export const pencilTool: ToolHandler = {
 
   onMouseMove(x, y, ctx) {
     ctx.setCurrentElement((prev) => {
-      if (!prev || prev.type !== "pencil" || !prev.points) return prev;
+      if (
+        !prev ||
+        prev.type !== "pencil" ||
+        !prev.points ||
+        !ctx.roughGenerator
+      )
+        return prev;
 
-      return {
+      const updated = {
         ...prev,
         points: [...prev.points, { x, y }],
         x2: x,
         y2: y,
       };
+
+      const g = ctx.roughGenerator;
+      if (!g) return updated;
+
+      updated.roughElement = g.linearPath(
+        updated.points.map((p) => [p.x, p.y]),
+        { stroke: updated.stroke,  seed: updated.seed, },
+      );
+
+      return updated
     });
-    //   return;
   },
 
   onMouseUp(ctx) {
@@ -41,7 +57,7 @@ export const pencilTool: ToolHandler = {
 
     el.roughElement = ctx.roughGenerator?.linearPath(
       el.points.map((p) => [p.x, p.y]),
-      { stroke: el.stroke || "#000" },
+      { stroke: el.stroke || "#000",  seed: el.seed, },
     );
 
     ctx.commit([...ctx.elements, ctx.currentElement]);

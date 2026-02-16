@@ -53,10 +53,6 @@ export default function App() {
     camera.zoomAt(delta, centerX, centerY);
   };
 
-  // const resetZoom = () => {
-  //   camera.setCamera((c) => ({ ...c, zoom: 1 }));
-  // };
-
   // keyboard shortcuts
   useKeyboard(
     setCurrentTool,
@@ -106,6 +102,7 @@ export default function App() {
                 y2: world.y,
                 text,
                 stroke: theme.colors.defaultStroke,
+                seed: Math.floor(Math.random() * 1000000),
               },
             ]);
 

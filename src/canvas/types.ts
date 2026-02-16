@@ -34,6 +34,7 @@ export interface DrawingElement {
   text?: string;
 
   roughElement?: Drawable;
+  seed: number;
 }
 
 export type HistoryState = {
