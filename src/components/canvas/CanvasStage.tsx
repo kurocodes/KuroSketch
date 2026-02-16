@@ -3,7 +3,6 @@ import { screenToWorld, type Camera } from "../../canvas/camera";
 import type { DrawingElement, ToolType } from "../../canvas/types";
 import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
-// import { useKeyState } from "../../hooks/useKeyState";
 import { drawElement } from "../../canvas/renderer";
 import type { RoughGenerator } from "roughjs/bin/generator";
 
@@ -40,8 +39,6 @@ export default function CanvasStage({
   const roughRef = useRef<RoughCanvas | null>(null);
   const generatorRef = useRef<RoughGenerator | null>(null);
   const isPointerDown = useRef(false);
-
-  // const spacePressed = useKeyState(" ");
 
   // setup (runs once)
   useEffect(() => {
@@ -107,7 +104,7 @@ export default function CanvasStage({
         e.currentTarget.setPointerCapture(e.pointerId);
 
         if (currentTool === "text") {
-          e.preventDefault(); // 🔥 IMPORTANT
+          e.preventDefault();
         }
 
         const { x, y } = getScreenPos(e);
