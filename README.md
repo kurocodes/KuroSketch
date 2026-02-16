@@ -1,5 +1,7 @@
 # 🎨 KuroSketch
 
+https://github.com/user-attachments/assets/45718c96-6966-4119-adcf-711a997c41ae
+
 A minimal sketching app built from scratch… <br />
 not to copy tools like Excalidraw — <br />
 but to understand how they actually work.
@@ -108,9 +110,3 @@ npm run dev
 
 Open `http://localhost:5173`
 and start sketching ✨
-
-## 🎥 Video Preview
-
-
-https://github.com/user-attachments/assets/45718c96-6966-4119-adcf-711a997c41ae
-
