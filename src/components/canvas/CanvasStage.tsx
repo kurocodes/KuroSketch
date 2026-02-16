@@ -39,6 +39,7 @@ export default function CanvasStage({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const roughRef = useRef<RoughCanvas | null>(null);
   const generatorRef = useRef<RoughGenerator | null>(null);
+  const isPointerDown = useRef(false);
 
   // const spacePressed = useKeyState(" ");
 
@@ -79,7 +80,7 @@ export default function CanvasStage({
     if (generatorRef.current) {
       setRoughGenerator(generatorRef.current);
     }
-  }, []);
+  }, [setRoughGenerator]);
 
   // mouse handlers
   const getScreenPos = (e: React.MouseEvent) => {
@@ -99,8 +100,12 @@ export default function CanvasStage({
         display: "block",
         backgroundColor: canvasBg,
         cursor: toolCursor[currentTool],
+        touchAction: "none",
       }}
-      onMouseDown={(e) => {
+      onPointerDown={(e) => {
+        isPointerDown.current = true;
+        e.currentTarget.setPointerCapture(e.pointerId);
+
         if (currentTool === "text") {
           e.preventDefault(); // 🔥 IMPORTANT
         }
@@ -120,10 +125,12 @@ export default function CanvasStage({
         const world = screenToWorld(x, y, camera);
         onMouseDown(world.x, world.y);
       }}
-      onMouseMove={(e) => {
+
+      onPointerMove={(e) => {
+        if (!isPointerDown.current) return;
         const { x, y } = getScreenPos(e);
 
-        if ((forcePan || currentTool === "pan") && e.buttons === 1) {
+        if (forcePan || currentTool === "pan") {
           onMouseMove(x, y); // screen space
           return;
         }
@@ -131,7 +138,10 @@ export default function CanvasStage({
         const world = screenToWorld(x, y, camera);
         onMouseMove(world.x, world.y);
       }}
-      onMouseUp={() => {
+
+      onPointerUp={(e) => {
+        isPointerDown.current = false;
+        e.currentTarget.releasePointerCapture(e.pointerId);
         onMouseUp();
       }}
       onWheel={(e) => {
