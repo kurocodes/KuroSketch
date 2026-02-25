@@ -11,6 +11,5 @@ export const eraserTool: ToolHandler = {
                 return;
             }
         }
-        // return;
     },
 }

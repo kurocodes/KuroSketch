@@ -38,6 +38,7 @@ export default function CanvasStage({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const roughRef = useRef<RoughCanvas | null>(null);
   const generatorRef = useRef<RoughGenerator | null>(null);
+  const isMiddlePanRef = useRef(false);
   const isPointerDown = useRef(false);
 
   // setup (runs once)
@@ -100,6 +101,26 @@ export default function CanvasStage({
         touchAction: "none",
       }}
       onPointerDown={(e) => {
+        // Only allow left click for mouse
+        // if (e.pointerType === "mouse" && e.button !== 0) return;
+        const isMouse = e.pointerType === "mouse";
+        const isLeftClick = e.button === 0;
+        const isMiddleClick = e.button === 1;
+
+        // Middle click always pans
+        if (isMouse && isMiddleClick) {
+          isMiddlePanRef.current = true;
+          isPointerDown.current = true;
+          e.currentTarget.setPointerCapture(e.pointerId);
+
+          const { x, y } = getScreenPos(e);
+          onPointerDown(x, y);
+          return;
+        }
+
+        // Block right click
+        if (isMouse && !isLeftClick) return;
+
         isPointerDown.current = true;
         e.currentTarget.setPointerCapture(e.pointerId);
 
@@ -109,6 +130,7 @@ export default function CanvasStage({
 
         const { x, y } = getScreenPos(e);
 
+        // Left click pan (space or pan tool)
         if (forcePan || currentTool === "pan") {
           onPointerDown(x, y);
           return;
@@ -122,10 +144,16 @@ export default function CanvasStage({
         const world = screenToWorld(x, y, camera);
         onPointerDown(world.x, world.y);
       }}
-
       onPointerMove={(e) => {
         if (!isPointerDown.current) return;
+
         const { x, y } = getScreenPos(e);
+
+        // Middle click pan
+        if (isMiddlePanRef.current) {
+          onPointerMove(x, y);
+          return;
+        }
 
         if (forcePan || currentTool === "pan") {
           onPointerMove(x, y); // screen space
@@ -135,9 +163,9 @@ export default function CanvasStage({
         const world = screenToWorld(x, y, camera);
         onPointerMove(world.x, world.y);
       }}
-
       onPointerUp={(e) => {
         isPointerDown.current = false;
+        isMiddlePanRef.current = false;
         e.currentTarget.releasePointerCapture(e.pointerId);
         onPointerUp();
       }}
@@ -146,6 +174,7 @@ export default function CanvasStage({
         const { x, y } = getScreenPos(e);
         zoomAt(e.deltaY, x, y);
       }}
+      onContextMenu={(e) => e.preventDefault()}
     />
   );
 }

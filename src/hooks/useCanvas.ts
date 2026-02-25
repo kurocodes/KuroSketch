@@ -62,7 +62,7 @@ export function useCanvas({
 
   const tool = tools[forcePan ? "pan" : currentTool];
 
-  const panCursor = isPanning ? "grabbing" : "grab";
+  const panCursor: CSSProperties["cursor"] = isPanning ? "grabbing" : "grab";
 
   //   const generateId = () => `${Date.now()}-${Math.random()}`;
   const generateId = () => Date.now().toString();

@@ -27,12 +27,23 @@ export default function App() {
   );
   const isTextEditing = textEditor !== null;
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const [roughGenerator, setRoughGenerator] = useState<RoughGenerator | null>(null);
+  const [roughGenerator, setRoughGenerator] = useState<RoughGenerator | null>(
+    null,
+  );
 
   // engine hooks
   const history = useHistory();
   const camera = useCamera();
   const theme = useTheme();
+
+  // keyboard shortcuts
+  useKeyboard(
+    setCurrentTool,
+    history.undo,
+    history.redo,
+    setForcePan,
+    isTextEditing,
+  );
 
   const canvas = useCanvas({
     elements: history.elements,
@@ -52,15 +63,6 @@ export default function App() {
     const centerY = window.innerHeight / 2;
     camera.zoomAt(delta, centerX, centerY);
   };
-
-  // keyboard shortcuts
-  useKeyboard(
-    setCurrentTool,
-    history.undo,
-    history.redo,
-    setForcePan,
-    isTextEditing,
-  );
 
   return (
     <>
