@@ -10,9 +10,9 @@ type Props = {
   elements: DrawingElement[];
   currentElement: DrawingElement | null;
   currentTool: ToolType;
-  onPointerDown: (x: number, y: number) => void;
-  onPointerMove: (x: number, y: number) => void;
-  onPointerUp: () => void;
+  onPointerDown: (x: number, y: number, options?: { forcePan?: boolean }) => void;
+  onPointerMove: (x: number, y: number, options?: { forcePan?: boolean }) => void;
+  onPointerUp: (options?: { forcePan?: boolean }) => void;
   camera: Camera;
   zoomAt: (delta: number, x: number, y: number) => void;
   canvasBg: string;
@@ -114,7 +114,7 @@ export default function CanvasStage({
           e.currentTarget.setPointerCapture(e.pointerId);
 
           const { x, y } = getScreenPos(e);
-          onPointerDown(x, y);
+          onPointerDown(x, y, { forcePan: true });
           return;
         }
 
@@ -151,7 +151,7 @@ export default function CanvasStage({
 
         // Middle click pan
         if (isMiddlePanRef.current) {
-          onPointerMove(x, y);
+          onPointerMove(x, y, { forcePan: true });
           return;
         }
 
@@ -164,10 +164,14 @@ export default function CanvasStage({
         onPointerMove(world.x, world.y);
       }}
       onPointerUp={(e) => {
+        if (isMiddlePanRef.current) {
+          onPointerUp({ forcePan: true });
+          isMiddlePanRef.current = false;
+        } else {
+          onPointerUp();
+        }
         isPointerDown.current = false;
-        isMiddlePanRef.current = false;
         e.currentTarget.releasePointerCapture(e.pointerId);
-        onPointerUp();
       }}
       onWheel={(e) => {
         // e.preventDefault();

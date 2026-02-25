@@ -60,7 +60,7 @@ export function useCanvas({
   const isPanningRef = useRef(false);
   const [isPanning, setIsPanning] = useState(false);
 
-  const tool = tools[forcePan ? "pan" : currentTool];
+  // const tool = tools[forcePan ? "pan" : currentTool];
 
   const panCursor: CSSProperties["cursor"] = isPanning ? "grabbing" : "grab";
 
@@ -89,16 +89,30 @@ export function useCanvas({
     roughGenerator,
   };
 
-  const onPointerDown = (x: number, y: number) => {
-    tool?.onPointerDown?.(x, y, ctx);
+  const onPointerDown = (
+    x: number,
+    y: number,
+    options?: { forcePan?: boolean },
+  ) => {
+    const activeTool =
+      options?.forcePan || forcePan ? tools["pan"] : tools[currentTool];
+    activeTool?.onPointerDown?.(x, y, ctx);
   };
 
-  const onPointerMove = (x: number, y: number) => {
-    tool?.onPointerMove?.(x, y, ctx);
+  const onPointerMove = (
+    x: number,
+    y: number,
+    options?: { forcePan?: boolean },
+  ) => {
+    const activeTool =
+      options?.forcePan || forcePan ? tools["pan"] : tools[currentTool];
+    activeTool?.onPointerMove?.(x, y, ctx);
   };
 
-  const onPointerUp = () => {
-    tool?.onPointerUp?.(ctx);
+  const onPointerUp = (options?: { forcePan?: boolean }) => {
+    const activeTool =
+      options?.forcePan || forcePan ? tools["pan"] : tools[currentTool];
+    activeTool?.onPointerUp?.(ctx);
   };
 
   const ToolCursor: { [key in ToolType]: CSSProperties["cursor"] } = {
@@ -112,5 +126,11 @@ export function useCanvas({
     pan: panCursor,
   };
 
-  return { currentElement, onPointerDown, onPointerMove, onPointerUp, ToolCursor };
+  return {
+    currentElement,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    ToolCursor,
+  };
 }
