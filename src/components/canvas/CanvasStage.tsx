@@ -1,17 +1,26 @@
-import React, { useEffect, useRef, type CSSProperties } from "react";
-import { screenToWorld, type Camera } from "../../canvas/camera";
+import { useEffect, useRef, type CSSProperties } from "react";
+import { type Camera } from "../../canvas/camera";
 import type { DrawingElement, ToolType } from "../../canvas/types";
 import rough from "roughjs";
 import type { RoughCanvas } from "roughjs/bin/canvas";
 import { drawElement } from "../../canvas/renderer";
 import type { RoughGenerator } from "roughjs/bin/generator";
+import { usePointerControls } from "../../hooks/usePointerControls";
 
 type Props = {
   elements: DrawingElement[];
   currentElement: DrawingElement | null;
   currentTool: ToolType;
-  onPointerDown: (x: number, y: number, options?: { forcePan?: boolean }) => void;
-  onPointerMove: (x: number, y: number, options?: { forcePan?: boolean }) => void;
+  onPointerDown: (
+    x: number,
+    y: number,
+    options?: { forcePan?: boolean },
+  ) => void;
+  onPointerMove: (
+    x: number,
+    y: number,
+    options?: { forcePan?: boolean },
+  ) => void;
   onPointerUp: (options?: { forcePan?: boolean }) => void;
   camera: Camera;
   zoomAt: (delta: number, x: number, y: number) => void;
@@ -38,8 +47,17 @@ export default function CanvasStage({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const roughRef = useRef<RoughCanvas | null>(null);
   const generatorRef = useRef<RoughGenerator | null>(null);
-  const isMiddlePanRef = useRef(false);
-  const isPointerDown = useRef(false);
+
+  const pointerHandlers = usePointerControls({
+    canvasRef,
+    camera,
+    currentTool,
+    forcePan,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    zoomAt,
+  });
 
   // setup (runs once)
   useEffect(() => {
@@ -80,15 +98,6 @@ export default function CanvasStage({
     }
   }, [setRoughGenerator]);
 
-  // mouse handlers
-  const getScreenPos = (e: React.MouseEvent) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
-  };
-
   return (
     <canvas
       ref={canvasRef}
@@ -100,85 +109,7 @@ export default function CanvasStage({
         cursor: toolCursor[currentTool],
         touchAction: "none",
       }}
-      onPointerDown={(e) => {
-        // Only allow left click for mouse
-        // if (e.pointerType === "mouse" && e.button !== 0) return;
-        const isMouse = e.pointerType === "mouse";
-        const isLeftClick = e.button === 0;
-        const isMiddleClick = e.button === 1;
-
-        // Middle click always pans
-        if (isMouse && isMiddleClick) {
-          isMiddlePanRef.current = true;
-          isPointerDown.current = true;
-          e.currentTarget.setPointerCapture(e.pointerId);
-
-          const { x, y } = getScreenPos(e);
-          onPointerDown(x, y, { forcePan: true });
-          return;
-        }
-
-        // Block right click
-        if (isMouse && !isLeftClick) return;
-
-        isPointerDown.current = true;
-        e.currentTarget.setPointerCapture(e.pointerId);
-
-        if (currentTool === "text") {
-          e.preventDefault();
-        }
-
-        const { x, y } = getScreenPos(e);
-
-        // Left click pan (space or pan tool)
-        if (forcePan || currentTool === "pan") {
-          onPointerDown(x, y);
-          return;
-        }
-
-        if (currentTool === "text") {
-          onPointerDown(x, y);
-          return;
-        }
-
-        const world = screenToWorld(x, y, camera);
-        onPointerDown(world.x, world.y);
-      }}
-      onPointerMove={(e) => {
-        if (!isPointerDown.current) return;
-
-        const { x, y } = getScreenPos(e);
-
-        // Middle click pan
-        if (isMiddlePanRef.current) {
-          onPointerMove(x, y, { forcePan: true });
-          return;
-        }
-
-        if (forcePan || currentTool === "pan") {
-          onPointerMove(x, y); // screen space
-          return;
-        }
-
-        const world = screenToWorld(x, y, camera);
-        onPointerMove(world.x, world.y);
-      }}
-      onPointerUp={(e) => {
-        if (isMiddlePanRef.current) {
-          onPointerUp({ forcePan: true });
-          isMiddlePanRef.current = false;
-        } else {
-          onPointerUp();
-        }
-        isPointerDown.current = false;
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      }}
-      onWheel={(e) => {
-        // e.preventDefault();
-        const { x, y } = getScreenPos(e);
-        zoomAt(e.deltaY, x, y);
-      }}
-      onContextMenu={(e) => e.preventDefault()}
+      {...pointerHandlers}
     />
   );
 }
