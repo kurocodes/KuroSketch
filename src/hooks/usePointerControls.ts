@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { screenToWorld, type Camera } from "../canvas/camera";
 import type { ToolType } from "../canvas/types";
 
 interface PointerControlProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   camera: Camera;
+  setCamera: React.Dispatch<React.SetStateAction<Camera>>;
   currentTool: ToolType;
   forcePan: boolean;
   onPointerDown: (
@@ -24,6 +25,7 @@ interface PointerControlProps {
 export function usePointerControls({
   canvasRef,
   camera,
+  setCamera,
   currentTool,
   forcePan,
   onPointerDown,
@@ -34,13 +36,49 @@ export function usePointerControls({
   const isMiddlePanRef = useRef(false);
   const isPointerDown = useRef(false);
 
-  const getScreenPos = (e: { clientX: number; clientY: number }) => {
+  const getScreenPos = useCallback((e: { clientX: number; clientY: number }) => {
     const rect = canvasRef.current!.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
-  };
+  }, [canvasRef]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const wheelHandler = (e: WheelEvent) => {
+      e.preventDefault();
+
+      const { x, y } = getScreenPos(e);
+
+      if (e.ctrlKey) {
+        zoomAt(e.deltaY, x, y);
+        return;
+      }
+
+      let dx = e.deltaX;
+      let dy = e.deltaY;
+
+      if (e.shiftKey) {
+        dx = e.deltaY;
+        dy = 0;
+      }
+
+      setCamera((c) => ({
+        ...c,
+        x: c.x - dx,
+        y: c.y - dy,
+      }))
+    };
+
+    canvas.addEventListener("wheel", wheelHandler, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("wheel", wheelHandler);
+    }
+  }, [zoomAt, setCamera, canvasRef, getScreenPos]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     // Only allow left click for mouse
@@ -118,12 +156,6 @@ export function usePointerControls({
       e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-    // e.preventDefault();
-    const { x, y } = getScreenPos(e);
-    zoomAt(e.deltaY, x, y);
-  };
-
   const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) =>
     e.preventDefault();
 
@@ -131,7 +163,7 @@ export function usePointerControls({
     onPointerDown: handlePointerDown,
     onPointerMove: handlePointerMove,
     onPointerUp: handlePointerUp,
-    onWheel: handleWheel,
+    // onWheel: handleWheel,
     onContextMenu: handleContextMenu,
   };
 }

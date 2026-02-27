@@ -23,6 +23,7 @@ type Props = {
   ) => void;
   onPointerUp: (options?: { forcePan?: boolean }) => void;
   camera: Camera;
+  setCamera: React.Dispatch<React.SetStateAction<Camera>>;
   zoomAt: (delta: number, x: number, y: number) => void;
   canvasBg: string;
   forcePan: boolean;
@@ -38,6 +39,7 @@ export default function CanvasStage({
   onPointerMove,
   onPointerUp,
   camera,
+  setCamera,
   zoomAt,
   canvasBg,
   forcePan,
@@ -51,6 +53,7 @@ export default function CanvasStage({
   const pointerHandlers = usePointerControls({
     canvasRef,
     camera,
+    setCamera,
     currentTool,
     forcePan,
     onPointerDown,

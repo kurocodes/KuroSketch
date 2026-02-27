@@ -1,5 +1,5 @@
 - extract the pointers handle logic from CanvasStage to usePointerControls hook.
-- change the zoom on scroll to pan on scroll (for touch pan, scrollX -> panX, scrollY -> panY)
+- change the zoom on scroll to pan on scroll (for touchpad pan, scrollX -> panX, scrollY -> panY)
 
 ### Stale Closure Risk (Important)
 

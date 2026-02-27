@@ -75,6 +75,7 @@ export default function App() {
         onPointerMove={canvas.onPointerMove}
         onPointerUp={canvas.onPointerUp}
         camera={camera.camera}
+        setCamera={camera.setCamera}
         zoomAt={camera.zoomAt}
         canvasBg={theme.colors.canvasBg}
         forcePan={forcePan}
