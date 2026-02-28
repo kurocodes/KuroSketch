@@ -35,14 +35,22 @@ export function usePointerControls({
 }: PointerControlProps) {
   const isMiddlePanRef = useRef(false);
   const isPointerDown = useRef(false);
+  const activePointers = useRef<Map<number, { x: number; y: number }>>(
+    new Map(),
+  );
+  const lastMidpoint = useRef<{ x: number; y: number } | null>(null);
+  const lastDistance = useRef<number | null>(null);
 
-  const getScreenPos = useCallback((e: { clientX: number; clientY: number }) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
-  }, [canvasRef]);
+  const getScreenPos = useCallback(
+    (e: { clientX: number; clientY: number }) => {
+      const rect = canvasRef.current!.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    },
+    [canvasRef],
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -70,14 +78,14 @@ export function usePointerControls({
         ...c,
         x: c.x - dx,
         y: c.y - dy,
-      }))
+      }));
     };
 
     canvas.addEventListener("wheel", wheelHandler, { passive: false });
 
     return () => {
       canvas.removeEventListener("wheel", wheelHandler);
-    }
+    };
   }, [zoomAt, setCamera, canvasRef, getScreenPos]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -108,6 +116,7 @@ export function usePointerControls({
     }
 
     const { x, y } = getScreenPos(e);
+    activePointers.current.set(e.pointerId, { x, y });
 
     // Left click pan (space or pan tool)
     if (forcePan || currentTool === "pan") {
@@ -128,6 +137,7 @@ export function usePointerControls({
     if (!isPointerDown.current) return;
 
     const { x, y } = getScreenPos(e);
+    activePointers.current.set(e.pointerId, { x, y });
 
     // Middle click pan
     if (isMiddlePanRef.current) {
@@ -137,6 +147,44 @@ export function usePointerControls({
 
     if (forcePan || currentTool === "pan") {
       onPointerMove(x, y); // screen space
+      return;
+    }
+
+    if (activePointers.current.size === 2) {
+      const pointers = Array.from(activePointers.current.values());
+      const p1 = pointers[0];
+      const p2 = pointers[1];
+
+      const midX = (p1.x + p2.x) / 2;
+      const midY = (p1.y + p2.y) / 2;
+
+      const distance = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+
+      if (!lastDistance.current) {
+        lastMidpoint.current = { x: midX, y: midY };
+        lastDistance.current = distance;
+        return;
+      }
+
+      const dx = midX - lastMidpoint.current!.x;
+      const dy = midY - lastMidpoint.current!.y;
+
+      const scale = distance / (lastDistance.current || distance);
+
+      setCamera((c) => {
+        const newZoom = Math.min(Math.max(c.zoom * scale, 0.2), 5);
+
+        const zoomRatio = newZoom / c.zoom;
+
+        return {
+          zoom: newZoom,
+          x: midX - (midX - (c.x + dx)) * zoomRatio,
+          y: midY - (midY - (c.y + dy)) * zoomRatio,
+        };
+      });
+
+      lastMidpoint.current = { x: midX, y: midY };
+      lastDistance.current = distance;
       return;
     }
 
@@ -152,6 +200,11 @@ export function usePointerControls({
       onPointerUp();
     }
     isPointerDown.current = false;
+    activePointers.current.delete(e.pointerId);
+    if (activePointers.current.size < 2) {
+      lastMidpoint.current = null;
+      lastDistance.current = null;
+    }
     if (e.currentTarget.hasPointerCapture(e.pointerId))
       e.currentTarget.releasePointerCapture(e.pointerId);
   };
