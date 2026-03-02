@@ -1,17 +1,10 @@
 import { MdDarkMode } from "react-icons/md";
 import { MdLightMode } from "react-icons/md";
 import { AnimatePresence, motion } from "motion/react";
-import type { ThemeMode } from "../../theme/theme";
-import { useTheme } from "../../hooks/useTheme";
+import { useThemeContext } from "../../theme/useThemeContext";
 
-export default function ThemeToggle({
-  mode,
-  toggleTheme,
-}: {
-  mode: ThemeMode;
-  toggleTheme: () => void;
-}) {
-  const { colors } = useTheme();
+export default function ThemeToggle() {
+  const { colors, mode, toggleTheme } = useThemeContext();
 
   return (
     <motion.div
@@ -23,7 +16,7 @@ export default function ThemeToggle({
       style={{
         borderColor: colors.uiBorder,
         backgroundColor: colors.uiBg,
-        boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+        // boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
       }}
     >
       <AnimatePresence mode="wait" initial={false}>

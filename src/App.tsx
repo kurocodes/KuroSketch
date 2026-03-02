@@ -3,7 +3,6 @@ import { AnimatePresence } from "motion/react";
 import type { ToolType } from "./canvas/types";
 import useHistory from "./hooks/useHistory";
 import { useCamera } from "./hooks/useCamera";
-import { useTheme } from "./hooks/useTheme";
 import { useCanvas } from "./hooks/useCanvas";
 import { useKeyboard } from "./hooks/useKeyboard";
 import CanvasStage from "./components/canvas/CanvasStage";
@@ -16,6 +15,7 @@ import TextEditor from "./components/overlays/TextEditor";
 import { screenToWorld } from "./canvas/camera";
 import InfoModal from "./components/overlays/InfoModal";
 import type { RoughGenerator } from "roughjs/bin/generator";
+import { useThemeContext } from "./theme/useThemeContext";
 
 export default function App() {
   // global editor state
@@ -34,7 +34,7 @@ export default function App() {
   // engine hooks
   const history = useHistory();
   const camera = useCamera();
-  const theme = useTheme();
+  const theme = useThemeContext();
 
   // keyboard shortcuts
   useKeyboard(
@@ -115,7 +115,7 @@ export default function App() {
       )}
 
       {/* UI LAYER */}
-      <ThemeToggle mode={theme.mode} toggleTheme={theme.toggleTheme} />
+      <ThemeToggle />
       <div className="fixed bottom-2 left-2 flex items-start gap-2">
         <ZoomControls
           zoomIn={() => zoomAtCenter(-1)}

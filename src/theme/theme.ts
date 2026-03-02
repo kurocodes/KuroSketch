@@ -1,39 +1,22 @@
 export type ThemeMode = "light" | "dark";
 
-// export const theme = {
-//   light: {
-//     canvasBg: "#fdfcf8",
-//     defaultStroke: "#000000",
-//     uiBg: "#f3f4f6",
-//     uiBorder: "#d1d5db",
-//     uiText: "#1f2937",
-//     accent: "#16a34a", // green
-//   },
-//   dark: {
-//     canvasBg: "#1c1c1a",
-//     defaultStroke: "#ffffff",
-//     uiBg: "#111827",
-//     uiBorder: "#1f2937",
-//     uiText: "#d1d5db",
-//     accent: "#22c55e",
-//   },
-// } as const;
-
 export const theme = {
   light: {
-    canvasBg: "#ffffff",
-    defaultStroke: "#000000",
-    uiBg: "#f8fafc",
-    uiBorder: "#e5e7eb",
-    uiText: "#0f172a",
-    accent: "#2563eb", // blue
+    canvasBg: "hsla(0, 0%, 88%, 1)",
+    defaultStroke: "hsla(0, 0%, 0%, 1)",
+    uiBg: "hsla(222, 47%, 89%, 1)",
+    uiBorder: "hsla(210, 24%, 84%, 1)",
+    uiText: "hsla(220, 13%, 9%, 1)",
+    accent: "hsla(221, 83%, 53%, 1)", // blue
   },
   dark: {
-    canvasBg: "#1e1e1e",
-    defaultStroke: "#ffffff",
-    uiBg: "#0f172a",
-    uiBorder: "#1f2933",
-    uiText: "#e5e7eb",
-    accent: "#3b82f6",
+    canvasBg: "hsla(0, 0%, 12%, 1)",
+    defaultStroke: "hsla(0, 0%, 100%, 1)",
+    uiBg: "hsla(222, 47%, 11%, 1)",
+    uiBorder: "hsla(210, 24%, 16%, 1)",
+    uiText: "hsla(220, 13%, 91%, 1)",
+    accent: "hsla(221, 83%, 47%, 1)",
   },
 } as const;
+
+export type Theme = typeof theme;

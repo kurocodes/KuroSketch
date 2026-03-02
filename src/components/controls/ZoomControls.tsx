@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { LayoutGroup } from "motion/react";
-import { useTheme } from "../../hooks/useTheme";
 import { LuZoomIn, LuZoomOut } from "react-icons/lu";
 import { ControlButton } from "./ControlButton";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 type ZoomControlsProps = {
   zoomIn: () => void;
@@ -17,7 +17,7 @@ export default function ZoomControls({
   // zoomPercent,
   // resetZoom,
 }: ZoomControlsProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
   const [hoveredControl, setHoveredControl] = useState<"in" | "out" | null>(
     null,
   );

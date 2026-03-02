@@ -1,9 +1,9 @@
-import { useTheme } from "../../hooks/useTheme";
 import { motion } from "motion/react";
 import { LuInfo } from "react-icons/lu";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 export default function HelpButton({ onClick }: { onClick: () => void }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
 
   return (
     <motion.button

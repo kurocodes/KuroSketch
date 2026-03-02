@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useTheme } from "../../hooks/useTheme";
 import { TOOLS } from "./tools.config";
 import ToolButton from "./ToolButton";
 import type { ToolType } from "../../canvas/types";
 import { LayoutGroup } from "motion/react";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 export default function Toolbar({
   currentTool,
@@ -12,7 +12,7 @@ export default function Toolbar({
   currentTool: ToolType;
   setCurrentTool: React.Dispatch<React.SetStateAction<ToolType>>;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
   const [hoveredTool, setHoveredTool] = useState<ToolType | null>(null);
   const [animateLabelOnMount, setAnimateLabelOnMount] = useState(true);
   const hoverTimeout = useRef<number | null>(null);
@@ -57,7 +57,7 @@ export default function Toolbar({
       style={{
         borderColor: colors.uiBorder,
         backgroundColor: colors.uiBg,
-        boxShadow:  "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+        // boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
       }}
     >
       <LayoutGroup id="toolbar-tooltips">

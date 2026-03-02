@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { LayoutGroup } from "motion/react";
-import { useTheme } from "../../hooks/useTheme";
 import { ControlButton } from "./ControlButton";
 import { LuUndo2, LuRedo2 } from "react-icons/lu";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 type HistoryControlsProps = {
   undo: () => void;
@@ -10,7 +10,7 @@ type HistoryControlsProps = {
 };
 
 export default function HistoryControls({ undo, redo }: HistoryControlsProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
   const [hoveredControl, setHoveredControl] = useState<"undo" | "redo" | null>(
     null,
   );

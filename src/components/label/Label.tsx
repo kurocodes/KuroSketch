@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
-import { useTheme } from "../../hooks/useTheme";
 import type React from "react";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 export default function Label({
   tooltipPosition,
@@ -13,7 +13,7 @@ export default function Label({
   animateOnMount?: boolean;
   children: React.ReactNode;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
 
   return (
     <motion.div

@@ -1,8 +1,8 @@
 import type { IconType } from "react-icons";
-import { useTheme } from "../../hooks/useTheme";
 import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 import Label from "../label/Label";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 export function ControlButton({
   Icon,
@@ -31,7 +31,7 @@ export function ControlButton({
   tooltipLayoutId?: string;
   animateLabelOnMount?: boolean;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
 
   return (
     <motion.button

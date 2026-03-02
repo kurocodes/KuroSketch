@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
-import { useTheme } from "../../hooks/useTheme";
 import type { Tool } from "./tools.config";
 import type React from "react";
 import type { ToolType } from "../../canvas/types";
 import Label from "../label/Label";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 export default function ToolButton({
   tool,
@@ -22,7 +22,8 @@ export default function ToolButton({
   onHoverEnd: () => void;
   animateLabelOnMount: boolean;
 }) {
-  const { colors } = useTheme();
+
+  const { colors } = useThemeContext();
 
   return (
     <motion.div
@@ -42,7 +43,7 @@ export default function ToolButton({
         className="relative z-10"
         style={{
           color: active === tool.id ? colors.uiBg : colors.uiText,
-          transition: "color 0.2s ease-in-out",
+          // transition: "color 0.2s ease-in-out",
         }}
       />
       {showLabel && (

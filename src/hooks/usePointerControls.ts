@@ -216,7 +216,6 @@ export function usePointerControls({
     onPointerDown: handlePointerDown,
     onPointerMove: handlePointerMove,
     onPointerUp: handlePointerUp,
-    // onWheel: handleWheel,
     onContextMenu: handleContextMenu,
   };
 }

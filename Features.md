@@ -1,5 +1,4 @@
-- extract the pointers handle logic from CanvasStage to usePointerControls hook.
-- change the zoom on scroll to pan on scroll (for touchpad pan, scrollX -> panX, scrollY -> panY)
+- Change the stroke color of already drawn element on canvas when toggle the theme
 
 ### Stale Closure Risk (Important)
 

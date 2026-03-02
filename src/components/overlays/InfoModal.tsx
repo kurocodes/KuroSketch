@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { motion } from "motion/react";
 import { LuX } from "react-icons/lu";
 import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6";
-import { useTheme } from "../../hooks/useTheme";
 import type { IconType } from "react-icons";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 const shortcuts = [
   { keys: "Space", action: "Hold to pan" },
@@ -57,7 +57,7 @@ export default function InfoModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
 
   useEffect(() => {
     if (!open) return;
@@ -158,7 +158,7 @@ export default function InfoModal({
 }
 
 function LinkButton({ link }: { link: SocialLink }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeContext();
   return (
     <motion.a
       key={link.id}
