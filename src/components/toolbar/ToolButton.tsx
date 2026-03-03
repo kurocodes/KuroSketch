@@ -27,7 +27,7 @@ export default function ToolButton({
 
   return (
     <motion.div
-      whileHover={{ backgroundColor: colors.uiBorder }}
+      whileHover={{ backgroundColor: colors.hover }}
       whileTap={{ scale: 0.95 }}
       transition={{ backgroundColor: { duration: 0 } }}
       onClick={() => setActive(tool.id)}
@@ -42,7 +42,7 @@ export default function ToolButton({
         size={24}
         className="relative z-10"
         style={{
-          color: active === tool.id ? colors.uiBg : colors.uiText,
+          color: active === tool.id ? colors.uiBg : colors.uiTextPrimary,
           // transition: "color 0.2s ease-in-out",
         }}
       />

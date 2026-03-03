@@ -13,7 +13,7 @@ export default function HelpButton({ onClick }: { onClick: () => void }) {
       className="fixed bottom-2 right-2 p-2 rounded-2xl aspect-square cursor-pointer"
       style={{ backgroundColor: colors.accent }}
     >
-      <span style={{ color: colors.uiText }}>
+      <span style={{ color: colors.uiTextPrimary }}>
         <LuInfo size={24} color={colors.uiBg} />
       </span>
     </motion.button>

@@ -1,5 +1,3 @@
-import type { Drawable } from "roughjs/bin/core";
-
 export type ElementType = "line" | "rect" | "ellipse" | "pencil" | "text";
 
 export type ToolType =
@@ -17,6 +15,10 @@ export interface Point {
   y: number;
 }
 
+export type StrokeType =
+  | { type: "theme"; role: "defaultStroke" }
+  | { type: "custom"; value: string };
+
 export interface DrawingElement {
   id: string;
   type: ElementType;
@@ -28,12 +30,11 @@ export interface DrawingElement {
   y2: number;
 
   // Optional fields
-  stroke?: string;
+  stroke?: StrokeType;
 
   points?: Point[]; // pencil
   text?: string;
 
-  roughElement?: Drawable;
   seed: number;
 }
 

@@ -46,7 +46,7 @@ export function ControlButton({
       className={`relative p-1.5 cursor-z ${className}`}
       style={{ cursor: cursor }}
     >
-      <span style={{ color: colors.uiText }}>
+      <span style={{ color: colors.uiTextPrimary }}>
         <Icon size={24} color={color} />
       </span>
       {label && showLabel && (

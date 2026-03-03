@@ -32,7 +32,7 @@ export default function Label({
       style={{
         backgroundColor: colors.uiBg,
         borderColor: colors.uiBorder,
-        color: colors.uiText,
+        color: colors.uiTextMuted,
       }}
     >
       {children}

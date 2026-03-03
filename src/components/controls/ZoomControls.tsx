@@ -95,7 +95,7 @@ export default function ZoomControls({
         {Math.round(zoomPercent)}%
       </button> */}
         <span
-          className="h-8 w-0.5 rounded"
+          className="h-8 w-px rounded"
           style={{ backgroundColor: colors.uiBorder }}
         ></span>
         <ControlButton

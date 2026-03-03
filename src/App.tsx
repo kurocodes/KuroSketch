@@ -104,7 +104,7 @@ export default function App() {
                 x2: world.x,
                 y2: world.y,
                 text,
-                stroke: theme.colors.defaultStroke,
+                stroke: { type: "theme", role: "defaultStroke" },
                 seed: Math.floor(Math.random() * 1000000),
               },
             ]);

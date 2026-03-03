@@ -78,7 +78,7 @@ export default function InfoModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.35)" }}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.35)", color: colors.uiTextPrimary }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -95,11 +95,10 @@ export default function InfoModal({
           <div>
             <h2
               className="text-lg font-semibold"
-              style={{ color: colors.uiText }}
             >
               About KuroSketch
             </h2>
-            <p className="mt-1 text-sm" style={{ color: colors.uiText }}>
+            <p className="mt-1 text-sm">
               KuroSketch is a lightweight drawing playground for fast ideas and
               clean diagrams. Sketch shapes, write text, and move around the
               canvas with simple tools and shortcuts.
@@ -109,7 +108,6 @@ export default function InfoModal({
             type="button"
             onClick={onClose}
             className="p-2 rounded-xl hover:bg-[#d1d5db]"
-            style={{ color: colors.uiText }}
           >
             <LuX size={18} />
           </motion.button>
@@ -119,7 +117,6 @@ export default function InfoModal({
           <div className="flex items-center justify-between">
             <h3
               className="text-sm font-semibold uppercase tracking-wide"
-              style={{ color: colors.uiText }}
             >
               Connect
             </h3>
@@ -132,7 +129,6 @@ export default function InfoModal({
 
           <h3
             className="mt-4 text-sm font-semibold uppercase tracking-wide"
-            style={{ color: colors.uiText }}
           >
             Keyboard Shortcuts
           </h3>
@@ -142,7 +138,6 @@ export default function InfoModal({
                 key={item.keys}
                 className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm"
                 style={{
-                  color: colors.uiText,
                   borderColor: colors.uiBorder,
                 }}
               >

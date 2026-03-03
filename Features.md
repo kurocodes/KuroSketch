@@ -1,4 +1,6 @@
-- Change the stroke color of already drawn element on canvas when toggle the theme
+- work on zoom and history buttons, fix the zoom using zoom buttons and display the zoom value in zoom controls
+- disable zoom in and zoom out control when reach the zoom in and zoom out limit
+- disable the redo or undo button when redo or undo stack is empty
 
 ### Stale Closure Risk (Important)
 

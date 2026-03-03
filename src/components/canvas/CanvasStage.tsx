@@ -6,6 +6,7 @@ import type { RoughCanvas } from "roughjs/bin/canvas";
 import { drawElement } from "../../canvas/renderer";
 import type { RoughGenerator } from "roughjs/bin/generator";
 import { usePointerControls } from "../../hooks/usePointerControls";
+import { useThemeContext } from "../../theme/useThemeContext";
 
 type Props = {
   elements: DrawingElement[];
@@ -46,6 +47,7 @@ export default function CanvasStage({
   toolCursor,
   setRoughGenerator,
 }: Props) {
+  const { colors } = useThemeContext();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const roughRef = useRef<RoughCanvas | null>(null);
   const generatorRef = useRef<RoughGenerator | null>(null);
@@ -89,11 +91,11 @@ export default function CanvasStage({
     ctx.translate(camera.x, camera.y);
     ctx.scale(camera.zoom, camera.zoom);
 
-    elements.forEach((el) => drawElement(el, rc, ctx));
-    if (currentElement) drawElement(currentElement, rc, ctx);
+    elements.forEach((el) => drawElement(el, rc, ctx, colors));
+    if (currentElement) drawElement(currentElement, rc, ctx, colors);
 
     ctx.restore();
-  }, [elements, currentElement, camera]);
+  }, [elements, currentElement, camera, colors]);
 
   useEffect(() => {
     if (generatorRef.current) {

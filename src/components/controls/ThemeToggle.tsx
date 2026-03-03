@@ -28,7 +28,7 @@ export default function ThemeToggle() {
             exit={{ scale: 0.9, filter: "blur(1px)" }}
             transition={{ duration: 0.1, ease: "easeOut" }}
           >
-            <MdDarkMode size={24} color={colors.uiText} />
+            <MdDarkMode size={24} color={colors.uiTextPrimary} />
           </motion.div>
         ) : (
           <motion.div
@@ -38,7 +38,7 @@ export default function ThemeToggle() {
             exit={{ scale: 0.9, filter: "blur(1px)" }}
             transition={{ duration: 0.18, ease: "easeOut" }}
           >
-            <MdLightMode size={24} color={colors.uiText} />
+            <MdLightMode size={24} color={colors.uiTextPrimary} />
           </motion.div>
         )}
       </AnimatePresence>

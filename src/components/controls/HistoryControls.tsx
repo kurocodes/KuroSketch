@@ -79,7 +79,7 @@ export default function HistoryControls({ undo, redo }: HistoryControlsProps) {
           animateLabelOnMount={animateLabelOnMount}
         />
         <span
-          className="h-8 w-0.5 rounded"
+          className="h-8 w-px rounded"
           style={{ backgroundColor: colors.uiBorder }}
         ></span>
         <ControlButton
