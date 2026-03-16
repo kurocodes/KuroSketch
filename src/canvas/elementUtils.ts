@@ -17,7 +17,5 @@ export function moveElement(
     })),
   };
 
-  moved.roughElement = undefined;
-
   return moved;
 }
