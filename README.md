@@ -48,10 +48,33 @@ Deep learning.
 - ↩️ Undo / Redo system
 - 🤏 Pan & Zoom canvas
 - 🌗 Light / Dark theme toggle
+- 🎨 Theme-aware rendering (existing drawings update on theme change)
+- 🧠 Semantic color system (no hardcoded stroke colors)
+- 🖐️ Improved pointer system (mouse + touch support)
 - ⌨️ Keyboard shortcuts
 
 Everything rendered manually on canvas… <br />
 no SVG shortcuts 👀
+
+## 🎨 Theming System (New)
+
+The theme system was redesigned to be fully dynamic and scalable:
+
+- Elements no longer store raw colors
+- Instead, they use semantic color roles (e.g. defaultStroke)
+- Colors are resolved at render time
+
+This allows:
+
+→ Instant theme switching (even for old drawings) <br />
+→ Cleaner architecture (no mutation of stored elements) <br />
+→ Easy future support for color customization
+
+Also includes:
+
+- Soft UI palette (no pure black/white)
+- Lavender-based accent system
+- Theme-based shadows & hover states
 
 ## 🧩 Development Process
 
@@ -73,6 +96,7 @@ No skipping fundamentals.
 - Geometry basics (hit detection is sneaky…)
 - Designing a clean undo/redo history system
 - Separating tools, elements, and state
+- Building a theme system using semantic roles instead of fixed values
 - Debugging weird coordinate bugs caused by pan & zoom 😵‍💫
 
 Most importantly… <br />
@@ -90,7 +114,7 @@ Some ideas:
 - 💾 Save & load sketches
 - 🧩 More shapes (arrows, diamonds, etc.)
 - 🖌️ Stroke & color customization
-- 📱 Touch / mobile support
+- 📱 Advanced mobile gestures
 
 KuroSketch is a solid base. <br />
 From here… it can evolve into something really powerful.
